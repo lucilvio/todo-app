@@ -1,0 +1,20 @@
+body {
+    background-color: rgb(240, 240, 240);
+}
+
+.form-check-input {
+    cursor: pointer;
+}
+
+.remove-task {
+    cursor: pointer;
+}
+
+.done-task {
+    text-decoration: line-through;
+}
+
+.copyright {
+    font-size: 10px;
+    color: rgb(173, 173, 173);
+}
