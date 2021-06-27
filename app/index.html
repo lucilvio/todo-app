@@ -16,15 +16,18 @@
 </head>
 
 <body>
-    <div id="app" class="container-fluid min-vh-100 d-flex justify-content-center">
-        <div class="row w-100 mt-5 mx-md-5 mx-lg-5">
+    <div id="app" class="container-fluid ">
+        <div class="row mt-4 mb-3">
             <div class="col">
-                <div class="row">
-                    <div class="col">
-                        <h1><i class="fal fa-clipboard-check"></i>&nbsp;Todo App</h1>
-                    </div>
-                </div>
-                <div class="row shadow-sm bg-body p-3 mt-3 rounded">
+                <h1><i class="fal fa-clipboard-check"></i>&nbsp;Todo App</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <div class="shadow-sm bg-body p-3 rounded">nfionfsofs</div>
+            </div>
+            <div class="col-9">
+                <div class="row shadow-sm bg-body p-3 rounded">
                     <div class="col-7 col-sm-8 col-md-9 col-lg-10">
                         <input class="form-control" v-model="taskName" placeholder="Task Name" />
                     </div>
@@ -50,7 +53,7 @@
                             </li>
                         </div>
                         <div class="mt-4">
-                            <span class=" text-center text-muted small">Tarefas {{ tasks.filter(t => t.done).length}} /
+                            <span class=" text-center text-muted small"> Tasks {{ tasks.filter(t => t.done).length}} /
                                 <span class="fw-bold"> {{ tasks.length }} </span> </span>
                         </div>
                     </div>
@@ -65,10 +68,11 @@
                 </div>
             </div>
         </div>
-        
+
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.1.0/uuidv4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@3.1.2/dist/vue.global.prod.js"></script>
