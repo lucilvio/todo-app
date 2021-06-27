@@ -23,11 +23,8 @@ jobs:
       with:
         dotnet-version: '5.0.x'
 
-    - name: test
-      run: dir
-
     - name: Build with dotnet
-      run: dotnet build vue-todo-app/api/vue.todo.app.api/vue.todo.app.api.csproj --configuration Release
+      run: dotnet build ./api/vue.todo.app.api/vue.todo.app.api.csproj --configuration Release
 
     - name: dotnet publish
       run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
