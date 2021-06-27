@@ -23,6 +23,9 @@ jobs:
       with:
         dotnet-version: '5.0.x'
 
+    - name: test
+      run: dir
+
     - name: Build with dotnet
       run: dotnet build vue-todo-app/api/vue.todo.app.api/vue.todo.app.api.csproj --configuration Release
 
