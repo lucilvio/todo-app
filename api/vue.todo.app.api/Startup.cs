@@ -6,13 +6,16 @@ namespace Vue.TodoApp
 {
     public class Startup
     {
-        public void ConfigureServices(IServiceCollection services) {}
+        public void ConfigureServices(IServiceCollection services) 
+        {
+            services.AddCors();
+        }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseCustomExceptionHandler();
             
-            app.UseCors(config => {
+            app.UseCors(config => {                
                 config.AllowAnyHeader();
                 config.AllowAnyMethod();
                 config.AllowAnyOrigin();
