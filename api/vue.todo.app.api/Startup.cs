@@ -11,7 +11,14 @@ namespace Vue.TodoApp
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseCustomExceptionHandler();
-            app.UseRouting();
+            
+            app.UseCors(config => {
+                config.AllowAnyHeader();
+                config.AllowAnyMethod();
+                config.AllowAnyOrigin();
+            });
+            
+            app.UseRouting();            
             app.UseEndpoints(TasksApi.Map);
         }
     }

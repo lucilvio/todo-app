@@ -1,3 +1,5 @@
+const api = "https://vue-todo-app-api.azurewebsites.net/tasks";
+
 const appData = {
     data() {
         return {
@@ -6,6 +8,9 @@ const appData = {
         };
     },
     methods: {
+        loadTasks() {
+
+        },
         addTask() {
             if(!this.taskName.trim())
             {
@@ -24,6 +29,9 @@ const appData = {
         removeTask(taskId) {
             this.tasks = this.tasks.filter(t => t.id !== taskId);
         }   
+    },
+    mounted() {
+        fetch(api).then(response => response.json()).then(data => this.tasks = data);
     }
 };
 
