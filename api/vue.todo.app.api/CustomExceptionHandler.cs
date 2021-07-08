@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -21,13 +22,13 @@ static class CustomExceptionHandler
         catch (BadHttpRequestException ex)
         {
             context.Response.Clear();
-            context.Response.ContentType = "application/json";
+            context.Response.ContentType = "application/json";            
             context.Response.StatusCode = ex.StatusCode;
 
             await context.Response.WriteAsync(JsonSerializer.Serialize(new
             {
-                messsage = ex.Message
-            }));
+                message = ex.Message
+            }), Encoding.UTF8);
         }
         catch (Exception ex)
         {

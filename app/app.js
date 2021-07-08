@@ -1,4 +1,5 @@
-const api = "https://vue-todo-app-api.azurewebsites.net/tasks";
+// const api = "https://vue-todo-app-api.azurewebsites.net/tasks";
+const api = "https://localhost:5001/tasks";
 
 const appData = {
     data() {
@@ -8,30 +9,50 @@ const appData = {
         };
     },
     methods: {
-        loadTasks() {
-
+        async loadTasks() {
+            const response = await fetch(api);
+            const json = await response.json();
+            this.tasks = json;
         },
-        addTask() {
-            if(!this.taskName.trim())
-            {
-                toastr.error("It's not possible to do a task without name", "Oops!");
+        async addTask() {
+            let task = {
+                Name: this.taskName
+            };
+
+            const response = await fetch(api, { method: "post", body: JSON.stringify(task) });
+
+            if (response.ok) {
+                await this.loadTasks();
+                toastr.success("Registered!")
+
+                this.taskName = "";
+            } else {
+                if(response.status >= 500)
+                    return;
+
+                const json = await response.json();
+                toastr.error(json.message, "Ooops!");
                 return;
             }
-            if(this.tasks.find(t => t.name === this.taskName))
-            {
-                toastr.error("Seems you already have a task with this name", "Oops!");
-                return;
-            }
-
-            this.tasks.push({ id: uuidv4(), name: this.taskName, done: false, date: new Date() });
-            this.taskName = "";
         },
-        removeTask(taskId) {
+        async checkTask(taskId) {
+            const response = await fetch(api + "/" + taskId + "/done", { method: "put" });
+            await this.loadTasks();
+        },
+        async uncheckTask(taskId) {
+            const response = await fetch(api + "/" + taskId + "/undo", { method: "put" });
+            await this.loadTasks();
+        },
+        async removeTask(taskId) {
             this.tasks = this.tasks.filter(t => t.id !== taskId);
-        }   
+            const response = await fetch(api + "/" + taskId, { method: "delete" });
+
+            await this.loadTasks();
+            toastr.success("Deleted!");
+        }
     },
     mounted() {
-        fetch(api).then(response => response.json()).then(data => this.tasks = data);
+        this.loadTasks();
     }
 };
 
