@@ -1,5 +1,4 @@
-// const api = "https://vue-todo-app-api.azurewebsites.net/tasks";
-const api = "https://localhost:5001/tasks";
+const api = "https://vue-todo-app-api.azurewebsites.net/tasks";
 
 const appData = {
     data() {
