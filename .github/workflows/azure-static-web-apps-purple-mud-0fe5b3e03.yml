@@ -20,7 +20,7 @@ jobs:
           submodules: true
       - uses: microsoft/variable-substitution@v1 
         with:
-          files: 'settings.json'
+          files: './app/settings.json'
         env:
           api: https://vue-todo-app-api.azurewebsites.net        
       - name: Build And Deploy
