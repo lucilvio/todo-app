@@ -19,7 +19,9 @@ namespace Vue.TodoApp
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var lists = await this._context.Lists.ToListAsync();
+            var lists = await this._context.Lists
+                .AsNoTracking()
+                .ToListAsync();
 
             return Ok(lists.Select(l => new
             {

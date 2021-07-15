@@ -1,4 +1,3 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 
 namespace Vue.TodoApp
@@ -12,9 +11,6 @@ namespace Vue.TodoApp
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // optionsBuilder.LogTo(Console.WriteLine);
-            // optionsBuilder.EnableSensitiveDataLogging();
-
             base.OnConfiguring(optionsBuilder);
         }
 
@@ -22,8 +18,8 @@ namespace Vue.TodoApp
         {            
             modelBuilder.Entity<TaskList>().ToTable("Lists");
             modelBuilder.Entity<TaskList>().Property(p => p.Name).IsRequired();
-            modelBuilder.Entity<TaskList>().HasData(new TaskList("Default"));
             modelBuilder.Entity<TaskList>().Property(p => p.Id).ValueGeneratedNever();
+            modelBuilder.Entity<TaskList>().HasData(new TaskList("Default"));
             
             modelBuilder.Entity<Task>().ToTable("Tasks");
             modelBuilder.Entity<Task>().Property(p => p.Name).IsRequired();

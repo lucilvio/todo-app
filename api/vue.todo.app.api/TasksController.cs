@@ -19,8 +19,6 @@ namespace Vue.TodoApp
         [HttpGet("{id}/tasks")]
         public async Task<IActionResult> Get(Guid id)
         {
-            System.Console.WriteLine(id);
-
             var foundList = await this._context.Lists
                 .AsNoTracking()
                 .Include(l => l.Tasks)
