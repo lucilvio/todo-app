@@ -1,6 +1,3 @@
-const api = "https://localhost:5001";
-// const api = "https://vue-todo-app-api.azurewebsites.net";
-
 const appData = {
     data() {
         return {
@@ -12,10 +9,20 @@ const appData = {
         };
     },
     methods: {
+        async loadSettings() {
+            try {
+                const response = await fetch("./settings.json");
+                console.log(response);
+                const jsonSettings = await response.json();
+                this.settings = jsonSettings;                
+            } catch (error) {
+                console.error(error);
+            }
+        },
         async loadLists() {
             try {
-                
-                const response = await fetch(api + "/lists");
+                console.log(this.settings.api);
+                const response = await fetch(this.settings.api + "/lists");
                 const json = await response.json();
                 this.lists = json;
             } catch (error) {
@@ -23,7 +30,7 @@ const appData = {
             }
         },
         async loadTasks() {
-            const response = await fetch(api + "/lists/" + this.selectedList.id + "/tasks");
+            const response = await fetch(this.settings.api + "/lists/" + this.selectedList.id + "/tasks");
             const json = await response.json();
             this.tasks = json;
         },
@@ -32,7 +39,7 @@ const appData = {
                 name: this.taskName
             };
 
-            const response = await fetch(api + "/lists/" + this.selectedList.id + "/tasks", { method: "post", body: JSON.stringify(task), headers: { "Content-Type" : "application/json" }});
+            const response = await fetch(this.settings.api + "/lists/" + this.selectedList.id + "/tasks", { method: "post", body: JSON.stringify(task), headers: { "Content-Type" : "application/json" }});
 
             if (response.ok) {
                 await this.loadTasks();
@@ -49,15 +56,15 @@ const appData = {
             }
         },
         async checkTask(taskId) {
-            const response = await fetch(api + "/lists/" + this.selectedList.id + "/tasks/" + taskId + "/done", { method: "put" });
+            const response = await fetch(this.settings.api + "/lists/" + this.selectedList.id + "/tasks/" + taskId + "/done", { method: "put" });
             await this.loadTasks();
         },
         async uncheckTask(taskId) {
-            const response = await fetch(api + "/lists/" + this.selectedList.id + "/tasks/" + taskId + "/undo", { method: "put" });
+            const response = await fetch(this.settings.api + "/lists/" + this.selectedList.id + "/tasks/" + taskId + "/undo", { method: "put" });
             await this.loadTasks();
         },
         async removeTask(taskId) {            
-            const response = await fetch(api + "/lists/" + this.selectedList.id + "/tasks/" + taskId, { method: "delete" });            
+            const response = await fetch(this.settings.api + "/lists/" + this.selectedList.id + "/tasks/" + taskId, { method: "delete" });            
             await this.loadTasks();
 
             toastr.success("Deleted!");
@@ -74,7 +81,7 @@ const appData = {
                 Name: this.listName
             };
 
-            const response = await fetch(api + "/lists", { method: "post", body: JSON.stringify(list), headers: { "Content-Type" : "application/json" }});
+            const response = await fetch(this.settings.api + "/lists", { method: "post", body: JSON.stringify(list), headers: { "Content-Type" : "application/json" }});
 
             if (response.ok) {                
                 toastr.success("Registered!")
@@ -92,6 +99,7 @@ const appData = {
         }
     },
     async mounted() {
+        await this.loadSettings();
         await this.loadLists();
         this.selectedList = this.lists[0];
 
