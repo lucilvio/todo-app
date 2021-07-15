@@ -6,34 +6,37 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-static class CustomExceptionHandler
+namespace Vue.TodoApp
 {
-    public static void UseCustomExceptionHandler(this IApplicationBuilder app)
+    static class CustomExceptionHandler
     {
-        app.Use(Run);
-    }
-
-    private static async System.Threading.Tasks.Task Run(HttpContext context, Func<System.Threading.Tasks.Task> next)
-    {
-        try
+        public static void UseCustomExceptionHandler(this IApplicationBuilder app)
         {
-            await next.Invoke();
+            app.Use(Run);
         }
-        catch (BadHttpRequestException ex)
-        {
-            context.Response.Clear();
-            context.Response.ContentType = "application/json";            
-            context.Response.StatusCode = ex.StatusCode;
 
-            await context.Response.WriteAsync(JsonSerializer.Serialize(new
+        private static async System.Threading.Tasks.Task Run(HttpContext context, Func<System.Threading.Tasks.Task> next)
+        {
+            try
             {
-                message = ex.Message
-            }), Encoding.UTF8);
-        }
-        catch (Exception ex)
-        {
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            Console.WriteLine($"{ex.GetType().Name} {ex.Message}");
+                await next.Invoke();
+            }
+            catch (BadHttpRequestException ex)
+            {
+                context.Response.Clear();
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = ex.StatusCode;
+
+                await context.Response.WriteAsync(JsonSerializer.Serialize(new
+                {
+                    message = ex.Message
+                }), Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                Console.WriteLine($"{ex.GetType().Name} {ex.Message}");
+            }
         }
     }
 }

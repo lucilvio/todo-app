@@ -1,1 +1,4 @@
 api/vue.todo.app.api/*.json
+api/vue.todo.app.api/bin
+api/vue.todo.app.api/obj
+api/vue.todo.app.api/Properties

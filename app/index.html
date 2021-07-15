@@ -18,11 +18,22 @@
 <body>
     <div id="app" class="container-fluid ">
 
-        <div class="row mx-5 mt-4">
-            <div class="col-12 mb-3">
-                <h1><i class="fal fa-clipboard-check"></i>&nbsp;Todo App</h1>
+        <div class="row mx-5 mt-4 gx-5">
+            <div class="col-3">
+                <div class="row p-3 shadow-sm bg-body rounded">
+                    <span class="text-muted mb-3"> Lists </span>
+                    <ul class="lists">
+                        <li class="mt-2 mb-4 new-list" v-on:click="newList">
+                            <span><i class="fal fa-plus mx-3 text-primary"></i><input v-model="listName" v-on:blur="addList" placeholder="New List"></span>
+                        </li>
+                        <li class="mb-2 cursor-pointer" v-bind:class="{'selected-list': selectedList.id === list.id}" v-for="list in lists" v-on:click="changeList(list)">
+                            <span><i class="far fa-bars mx-3"></i>{{ list.name }}</span>                            
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="col-12">
+            <div class="col-9">
+                <h1>{{ selectedList.name }}</h1>
                 <div class="row shadow-sm bg-body p-3 rounded">
                     <div class="col-7 col-sm-8 col-md-9 col-lg-10">
                         <input class="form-control" v-model="taskName" placeholder="Task Name" />
