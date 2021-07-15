@@ -13,9 +13,14 @@ const appData = {
     },
     methods: {
         async loadLists() {
-            const response = await fetch(api + "/lists");
-            const json = await response.json();
-            this.lists = json;
+            try {
+                
+                const response = await fetch(api + "/lists");
+                const json = await response.json();
+                this.lists = json;
+            } catch (error) {
+                console.error(error);
+            }
         },
         async loadTasks() {
             const response = await fetch(api + "/lists/" + this.selectedList.id + "/tasks");
