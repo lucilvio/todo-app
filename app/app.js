@@ -9,6 +9,18 @@ const appData = {
         };
     },
     methods: {
+        async changesListener() {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("https://localhost:5001/tasks")
+                .configureLogging(signalR.LogLevel.Information)
+                .build();
+
+            await connection.start();
+
+            connection.on("tasksChanged", () => {
+                this.loadTasks();
+            });
+        },
         async loadSettings() {
             try {
                 const response = await fetch("./settings.json");
@@ -42,7 +54,6 @@ const appData = {
             const response = await fetch(this.settings.api + "/lists/" + this.selectedList.id + "/tasks", { method: "post", body: JSON.stringify(task), headers: { "Content-Type" : "application/json" }});
 
             if (response.ok) {
-                await this.loadTasks();
                 toastr.success("Registered!")
 
                 this.taskName = "";
@@ -57,15 +68,12 @@ const appData = {
         },
         async checkTask(taskId) {
             const response = await fetch(this.settings.api + "/lists/" + this.selectedList.id + "/tasks/" + taskId + "/done", { method: "put" });
-            await this.loadTasks();
         },
         async uncheckTask(taskId) {
             const response = await fetch(this.settings.api + "/lists/" + this.selectedList.id + "/tasks/" + taskId + "/undo", { method: "put" });
-            await this.loadTasks();
         },
         async removeTask(taskId) {            
             const response = await fetch(this.settings.api + "/lists/" + this.selectedList.id + "/tasks/" + taskId, { method: "delete" });            
-            await this.loadTasks();
 
             toastr.success("Deleted!");
         },
@@ -102,8 +110,10 @@ const appData = {
         await this.loadSettings();
         await this.loadLists();
         this.selectedList = this.lists[0];
-
+        
         await this.loadTasks();
+
+        await this.changesListener();
     }
 };
 

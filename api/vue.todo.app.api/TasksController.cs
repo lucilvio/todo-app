@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Vue.TodoApp
@@ -10,10 +11,12 @@ namespace Vue.TodoApp
     public class TasksController : ControllerBase
     {
         private readonly TodoAppContext _context;
+        private readonly IHubContext<ChangesListenerHub> _changesListenerHub;
 
-        public TasksController(TodoAppContext context)
+        public TasksController(TodoAppContext context, IHubContext<ChangesListenerHub> changesListenerHub)
         {
             this._context = context;
+            this._changesListenerHub = changesListenerHub;
         }
 
         [HttpGet("{id}/tasks")]
@@ -48,6 +51,8 @@ namespace Vue.TodoApp
             foundList.AddTask(request.Name);            
             await _context.SaveChangesAsync();
 
+            await _changesListenerHub.Clients.All.SendAsync("tasksChanged");
+
             return Ok();
         }
 
@@ -63,6 +68,8 @@ namespace Vue.TodoApp
 
             foundList.RemoveTask(taskId);
             await _context.SaveChangesAsync();
+
+            await _changesListenerHub.Clients.All.SendAsync("tasksChanged");
 
             return Ok();
         }
@@ -80,6 +87,8 @@ namespace Vue.TodoApp
             foundList.Task(taskId).MarkAsDone();
             await _context.SaveChangesAsync();
 
+            await _changesListenerHub.Clients.All.SendAsync("tasksChanged");
+
             return Ok();
         }
 
@@ -95,6 +104,8 @@ namespace Vue.TodoApp
 
             foundList.Task(taskId).MarkAsTodo();
             await _context.SaveChangesAsync();
+
+            await _changesListenerHub.Clients.All.SendAsync("tasksChanged");
 
             return Ok();
         }
