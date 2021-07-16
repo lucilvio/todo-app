@@ -9,6 +9,7 @@ namespace Vue.TodoApp.Model
             this.Id = Guid.NewGuid();
             this.Name = name;
             this.Done = false;
+            this.Important = false;
         }
 
         public Guid Id { get; private set; }

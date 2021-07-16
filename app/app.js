@@ -8,7 +8,7 @@ const appData = {
             listName: "",
             routes: [
                 { icon: "far fa-clipboard-list-check", title: "Tasks", name: "tasks", action: this.goToTasks },
-                { icon: "far fa-bookmark", title: "Important Tasks", name: "importantTasks", action: this.goToImportantTasks },
+                { icon: "fas fa-bookmark", title: "Important Tasks", name: "importantTasks", action: this.goToImportantTasks },
                 { icon: "fa fa-list", title: "List", name: "list", action: this.goToList }
             ],
             selectedRoute: {},
@@ -108,6 +108,12 @@ const appData = {
         async uncheckTask(taskId) {
             await fetch(this.settings.api + "/tasks/" + taskId + "/undo", { method: "put" });
         },
+        async markTaskAsImportant(taskId) {
+            await fetch(this.settings.api + "/tasks/" + taskId + "/important", { method: "put" });
+        },
+        async markTaskAsNotImportant(taskId) {
+            await fetch(this.settings.api + "/tasks/" + taskId + "/not-important", { method: "put" });
+        },
         async removeTask(taskId) {
             try {
                 await fetch(this.settings.api + "/tasks/" + taskId, { method: "delete" });
@@ -161,7 +167,7 @@ const appData = {
         },
         goToImportantTasks() {
             this.selectedList = { id: null, name: "" };
-            this.filteredTasks = this.tasks.filter(t => !t.list && t.important);
+            this.filteredTasks = this.tasks.filter(t => t.important);
         },
         goToList(list) {
             this.selectedRoute.title = list.name;
@@ -174,7 +180,7 @@ const appData = {
             return this.tasks.filter(t => !t.list).length;
         },
         importantTasksCounter: function () {
-            return this.tasks.filter(t => !t.list && t.important).length;
+            return this.tasks.filter(t => t.important).length;
         }
     },
     watch: {

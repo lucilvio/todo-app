@@ -10,6 +10,10 @@ body {
     cursor: pointer;
 }
 
+.important-flag {
+    cursor: pointer;
+}
+
 .done-task {
     text-decoration: line-through;
 }

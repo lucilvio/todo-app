@@ -23,7 +23,7 @@
                     <span class="text-muted mb-4"> Todo App </span>
                     <ul class="menu">
                         <li v-bind:class="{'selected': selectedRoute.name === 'importantTasks' }" v-on:click="setRoute('importantTasks')">
-                            <span><i class="far fa-bookmark me-3"></i>Important</span>
+                            <span><i class="fas fa-bookmark me-3"></i>Important</span>
                             <span v-if="importantTasksCounter > 0" class="taks-counter">{{ importantTasksCounter }}</span>
                         </li>
                         <li v-bind:class="{'selected': selectedRoute.name === 'tasks' }" v-on:click="setRoute('tasks')">
@@ -71,7 +71,8 @@
                                 <span v-bind:class="{'done-task': task.done}"> {{ task.name }} </span>
                             </div>
                             <div class="col-1">
-                                <span v-on:click="markTaskAsImportant(task.id)"><i class="fal fa-exclamation"></i></span>
+                                <span class="important-flag" v-if="task.important" v-on:click="markTaskAsNotImportant(task.id)"><i class="fas fa-bookmark"></i></span>
+                                <span class="important-flag" v-else v-on:click="markTaskAsImportant(task.id)"><i class="far fa-bookmark"></i></span>
                             </div>
                             <div class="col-1">
                                 <span v-on:click="removeTask(task.id)"><i class="far fa-trash-alt remove-task"></i></span>
