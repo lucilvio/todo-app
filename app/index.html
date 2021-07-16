@@ -17,23 +17,37 @@
 
 <body>
     <div id="app" class="container-fluid ">
-
         <div class="row mx-5 mt-4 gx-5">
             <div class="col-3">
                 <div class="row p-3 shadow-sm bg-body rounded">
-                    <span class="text-muted mb-3"> Lists </span>
-                    <ul class="lists">
-                        <li class="mt-2 mb-4 new-list" v-on:click="newList">
-                            <span><i class="fal fa-plus mx-3 text-primary"></i><input v-model="listName" v-on:blur="addList" placeholder="New List"></span>
+                    <span class="text-muted mb-4"> Todo App </span>
+                    <ul class="menu">
+                        <li v-bind:class="{'selected': selectedRoute.name === 'importantTasks' }" v-on:click="setRoute('importantTasks')">
+                            <span><i class="far fa-bookmark me-3"></i>Important</span>
+                            <span v-if="importantTasksCounter > 0" class="taks-counter">{{ importantTasksCounter }}</span>
                         </li>
-                        <li class="mb-2 cursor-pointer" v-bind:class="{'selected-list': selectedList.id === list.id}" v-for="list in lists" v-on:click="changeList(list)">
-                            <span><i class="far fa-bars mx-3"></i>{{ list.name }}</span>                            
+                        <li v-bind:class="{'selected': selectedRoute.name === 'tasks' }" v-on:click="setRoute('tasks')">
+                            <span><i class="far fa-clipboard-list-check me-3"></i>Tasks</span>
+                            <span v-if="tasksCounter > 0" class="taks-counter">{{ tasksCounter }}</span>
+                        </li>
+                        <hr>
+                        <li class="mb-2 cursor-pointer" v-bind:class="{'selected': selectedRoute.title === list.name }"
+                            v-for="list in lists" v-on:click="setRoute('list', list)">
+                            <span><i class="far fa-bars me-3"></i>{{ list.name }}</span>&nbsp;
+                            <span v-if="listTasksCounter(list.id) > 0" class="taks-counter">{{ listTasksCounter(list.id) }}</span>
+                            <span v-on:click="removeList(list.id)"><i class="far fa-trash-alt remove-list"></i></span>
+
+                        </li>
+                        <li class="new-list" v-on:click="newList">
+                            <span><i class="fal fa-plus me-3 text-primary"></i><input v-model="listName" v-on:blur="addList" 
+                                placeholder="New Task List"></span>
                         </li>
                     </ul>
                 </div>
             </div>
             <div class="col-9">
-                <h1>{{ selectedList.name }}</h1>
+                <h1><i v-bind:class="selectedRoute.icon" class="me-3 mb-3"></i>{{ selectedRoute.title }}</h1>
+
                 <div class="row shadow-sm bg-body p-3 rounded">
                     <div class="col-7 col-sm-8 col-md-9 col-lg-10">
                         <input class="form-control" v-model="taskName" placeholder="Task Name" />
@@ -43,22 +57,25 @@
                     </div>
                 </div>
                 <div class="row row shadow-sm bg-body p-3 mt-3 rounded">
-                    <div class="col" v-if="tasks.length > 0">
-                        <div class="row my-2" v-for="task in tasks">
+                    <div class="col" v-if="filteredTasks.length > 0">
+                        <div class="row my-2" v-for="task in filteredTasks">
                             <div class="col-1">
                                 <div class="form-check">
-                                    <input class="form-check-input" v-if="task.done" type="checkbox" v-model="task.done" v-on:click="uncheckTask(task.id)">
-                                    <input class="form-check-input" v-else-if="!task.done" type="checkbox" v-model="task.done" v-on:click="checkTask(task.id)">
+                                    <input class="form-check-input" v-if="task.done" type="checkbox" v-model="task.done"
+                                        v-on:click="uncheckTask(task.id)">
+                                    <input class="form-check-input" v-else-if="!task.done" type="checkbox"
+                                        v-model="task.done" v-on:click="checkTask(task.id)">
                                 </div>
                             </div>
-                            <div class="col-10">
+                            <div class="col-9">
                                 <span v-bind:class="{'done-task': task.done}"> {{ task.name }} </span>
                             </div>
                             <div class="col-1">
-                                <span v-on:click="removeTask(task.id)"><i
-                                        class="far fa-trash-alt remove-task"></i></span>
+                                <span v-on:click="markTaskAsImportant(task.id)"><i class="fal fa-exclamation"></i></span>
                             </div>
-                            </li>
+                            <div class="col-1">
+                                <span v-on:click="removeTask(task.id)"><i class="far fa-trash-alt remove-task"></i></span>
+                            </div>
                         </div>
                         <div class="mt-4">
                             <span class=" text-center text-muted small"> Tasks {{ tasks.filter(t => t.done).length}} /

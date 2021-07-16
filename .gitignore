@@ -3,3 +3,5 @@ api/vue.todo.app.api/bin
 api/vue.todo.app.api/obj
 api/vue.todo.app.api/Properties
 api/vue.todo.app.api/*.Development.json
+api/vue.todo.app.api/*.db-shm
+api/vue.todo.app.api/*.db-wal

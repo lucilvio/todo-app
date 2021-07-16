@@ -45,7 +45,7 @@ namespace Vue.TodoApp
             app.UseRouting();
             app.UseEndpoints(config =>
             {
-                config.MapHub<ChangesListenerHub>("/tasks");
+                config.MapHub<ChangesListenerHub>("/change-listener");
                 config.MapControllers();
             });
         }

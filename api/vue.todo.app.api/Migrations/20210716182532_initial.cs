@@ -26,28 +26,24 @@ namespace vue.todo.app.api.Migrations
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Done = table.Column<bool>(type: "INTEGER", nullable: false),
-                    TaskListId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    Important = table.Column<bool>(type: "INTEGER", nullable: false),
+                    ListId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tasks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tasks_Lists_TaskListId",
-                        column: x => x.TaskListId,
+                        name: "FK_Tasks_Lists_ListId",
+                        column: x => x.ListId,
                         principalTable: "Lists",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Lists",
-                columns: new[] { "Id", "Name" },
-                values: new object[] { new Guid("b9beb519-a5d5-47c8-91af-ca67558d5caf"), "Default" });
-
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_TaskListId",
+                name: "IX_Tasks_ListId",
                 table: "Tasks",
-                column: "TaskListId");
+                column: "ListId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

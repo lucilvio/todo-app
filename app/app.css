@@ -23,32 +23,39 @@ body {
     color: rgb(173, 173, 173);
 }
 
-ul  {
+ul.menu  {
     list-style: none;
 }
 
-ul li {
+ul.menu li {
+    margin-top: 20px;
+    margin-bottom: 20px;
     cursor: pointer;
 }
 
-ul li input {
+ul.menu li span.taks-counter {
+    float: right;
+    font-weight: bold;
+}
+
+ul.menu li input {
     border: none;
 }
 
-ul li:hover {
+ul.menu li:hover {
     border-radius: 5px;
     background-color: rgb(245, 245, 245);
 }
 
-ul li input:hover {
+ul.menu li input:hover {
     border-radius: 5px;
     background-color: rgb(245, 245, 245);
 }
 
-ul li.new-list {
+ul.menu li.new-list {
     cursor: text;
 }
 
-.selected-list {
+ul.menu li.selected {
     font-weight: bold;
 }

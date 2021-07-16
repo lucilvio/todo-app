@@ -16,7 +16,7 @@ namespace vue.todo.app.api.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.8");
 
-            modelBuilder.Entity("Vue.TodoApp.Task", b =>
+            modelBuilder.Entity("Vue.TodoApp.Model.Task", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
@@ -24,21 +24,24 @@ namespace vue.todo.app.api.Migrations
                     b.Property<bool>("Done")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("Important")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("ListId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("TaskListId")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("TaskListId");
+                    b.HasIndex("ListId");
 
                     b.ToTable("Tasks");
                 });
 
-            modelBuilder.Entity("Vue.TodoApp.TaskList", b =>
+            modelBuilder.Entity("Vue.TodoApp.Model.TaskList", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
@@ -50,25 +53,17 @@ namespace vue.todo.app.api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Lists");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("b9beb519-a5d5-47c8-91af-ca67558d5caf"),
-                            Name = "Default"
-                        });
                 });
 
-            modelBuilder.Entity("Vue.TodoApp.Task", b =>
+            modelBuilder.Entity("Vue.TodoApp.Model.Task", b =>
                 {
-                    b.HasOne("Vue.TodoApp.TaskList", null)
+                    b.HasOne("Vue.TodoApp.Model.TaskList", null)
                         .WithMany("Tasks")
-                        .HasForeignKey("TaskListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ListId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Vue.TodoApp.TaskList", b =>
+            modelBuilder.Entity("Vue.TodoApp.Model.TaskList", b =>
                 {
                     b.Navigation("Tasks");
                 });

@@ -2,16 +2,23 @@ const appData = {
     data() {
         return {
             tasks: [],
+            filteredTasks: [],
             lists: [],
             taskName: "",
             listName: "",
-            selectedList: { name: "" }
+            routes: [
+                { icon: "far fa-clipboard-list-check", title: "Tasks", name: "tasks", action: this.goToTasks },
+                { icon: "far fa-bookmark", title: "Important Tasks", name: "importantTasks", action: this.goToImportantTasks },
+                { icon: "fa fa-list", title: "List", name: "list", action: this.goToList }
+            ],
+            selectedRoute: {},
+            selectedList: { id: null, name: "" }
         };
     },
     methods: {
         async changesListener() {
             const connection = new signalR.HubConnectionBuilder()
-                .withUrl(this.settings.signalR + "/tasks")
+                .withUrl(this.settings.signalR + "/change-listener")
                 .configureLogging(signalR.LogLevel.Information)
                 .build();
 
@@ -30,93 +37,159 @@ const appData = {
                 const response = await fetch("./settings.json");
                 console.log(response);
                 const jsonSettings = await response.json();
-                this.settings = jsonSettings;                
+                this.settings = jsonSettings;
             } catch (error) {
                 console.error(error);
             }
         },
         async loadLists() {
             try {
-                console.log(this.settings.api);
                 const response = await fetch(this.settings.api + "/lists");
-                const json = await response.json();
-                this.lists = json;
+                const data = await response.json();
+
+                this.lists = data;
             } catch (error) {
                 console.error(error);
             }
         },
+        async removeList(id) {
+            try {
+                await fetch(this.settings.api + "/lists/" + id, { method: "delete" });
+                toastr.success("List Deleted!");
+
+                this.setRoute("tasks");
+            } catch (error) {
+                toastr.error("Error while trying to delete list", "Ooops!");
+                console.error(error);
+            }
+        },
         async loadTasks() {
-            const response = await fetch(this.settings.api + "/lists/" + this.selectedList.id + "/tasks");
-            const json = await response.json();
-            this.tasks = json;
+            let response;
+
+            try {
+                response = await fetch(this.settings.api + "/tasks");
+
+                const data = await response.json();
+                this.tasks = data;
+            } catch (error) {
+                toastr.error("Error on tasks loading");
+                console.error(error);
+            }
         },
         async addTask() {
             let task = {
-                name: this.taskName
+                name: this.taskName,
+                list: this.selectedList ? this.selectedList.id : null
             };
+            
+            try {
+                const response = await fetch(this.settings.api + "/tasks", { method: "post", body: JSON.stringify(task), headers: { "Content-Type": "application/json" } });
 
-            const response = await fetch(this.settings.api + "/lists/" + this.selectedList.id + "/tasks", { method: "post", body: JSON.stringify(task), headers: { "Content-Type" : "application/json" }});
+                if (response.ok) {
+                    toastr.success("Task Registered!")
 
-            if (response.ok) {
-                toastr.success("Registered!")
+                    this.taskName = "";
+                } else {
+                    if (response.status >= 500)
+                        throw new Exception();
 
-                this.taskName = "";
-            } else {
-                if(response.status >= 500)
+                    const json = await response.json();
+                    toastr.error(json.message, "Ooops!");
                     return;
-
-                const json = await response.json();
-                toastr.error(json.message, "Ooops!");
-                return;
+                }
+            } catch (error) {
+                toastr.error("Error on task register", "Ooops!");
+                console.error(error);
             }
         },
         async checkTask(taskId) {
-            const response = await fetch(this.settings.api + "/lists/" + this.selectedList.id + "/tasks/" + taskId + "/done", { method: "put" });
+            await fetch(this.settings.api + "/tasks/" + taskId + "/done", { method: "put" });
         },
         async uncheckTask(taskId) {
-            const response = await fetch(this.settings.api + "/lists/" + this.selectedList.id + "/tasks/" + taskId + "/undo", { method: "put" });
+            await fetch(this.settings.api + "/tasks/" + taskId + "/undo", { method: "put" });
         },
-        async removeTask(taskId) {            
-            const response = await fetch(this.settings.api + "/lists/" + this.selectedList.id + "/tasks/" + taskId, { method: "delete" });            
+        async removeTask(taskId) {
+            try {
+                await fetch(this.settings.api + "/tasks/" + taskId, { method: "delete" });
+                toastr.success("Task Deleted!");
+            } catch (error) {
+                toastr.error("Error while trying to delete task", "Oooops!");
+                console.error(error);
+            }
+        },
 
-            toastr.success("Deleted!");
-        },
-        async changeList(list){
-            this.selectedList = list;
-            await this.loadTasks();
-        },
         async addList() {
-            if(!this.listName)
+            if (!this.listName)
                 return;
 
             const list = {
                 Name: this.listName
             };
 
-            const response = await fetch(this.settings.api + "/lists", { method: "post", body: JSON.stringify(list), headers: { "Content-Type" : "application/json" }});
+            const response = await fetch(this.settings.api + "/lists", { method: "post", body: JSON.stringify(list), headers: { "Content-Type": "application/json" } });
 
-            if (response.ok) {                
+            if (response.ok) {
                 toastr.success("Registered!")
-                
-                this.listName = "";        
+
+                this.listName = "";
             } else {
-                if(response.status >= 500)
+                if (response.status >= 500)
                     return;
 
                 const json = await response.json();
                 toastr.error(json.message, "Ooops!");
                 return;
-            } 
+            }
+        },
+        listTasksCounter(id) {
+            return this.tasks.filter(t => t.list === id).length;
+        },
+        setRoute(route, params) {
+            const foundRoute = this.routes.find(r => r.name == route);
+
+            if (!foundRoute) {
+                console.error("Route " + route + " not found!");
+                return;
+            }
+
+            this.selectedRoute = foundRoute;
+            this.selectedRoute.action(params);
+        },
+        goToTasks() {
+            this.selectedList = { id: null, name: "" };
+            this.filteredTasks = this.tasks.filter(t => !t.list)
+        },
+        goToImportantTasks() {
+            this.selectedList = { id: null, name: "" };
+            this.filteredTasks = this.tasks.filter(t => !t.list && t.important);
+        },
+        goToList(list) {
+            this.selectedRoute.title = list.name;
+            this.selectedList = list;
+            this.filteredTasks = this.tasks.filter(t => t.list === list.id);
+        }
+    },
+    computed: {
+        tasksCounter: function () {
+            return this.tasks.filter(t => !t.list).length;
+        },
+        importantTasksCounter: function () {
+            return this.tasks.filter(t => !t.list && t.important).length;
+        }
+    },
+    watch: {
+        tasks(newValue, oldValue) {
+            if (this.selectedRoute.action)
+                this.selectedRoute.action(this.selectedList);
         }
     },
     async mounted() {
         await this.loadSettings();
         await this.loadLists();
-        this.selectedList = this.lists[0];
-        
         await this.loadTasks();
-
         await this.changesListener();
+
+        await this.setRoute("tasks");
     }
 };
 

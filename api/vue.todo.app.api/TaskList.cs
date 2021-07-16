@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Vue.TodoApp
+namespace Vue.TodoApp.Model
 {
-    public class TaskList
+    public partial class TaskList
     {
         public TaskList(string name)
         {
@@ -24,36 +24,17 @@ namespace Vue.TodoApp
 
         public void RemoveTask(Guid taskId)
         {
-            this.Tasks = this.Tasks.Where(t => t.Id != taskId).ToList();
+            var foundTask = this.Tasks.FirstOrDefault(t => t.Id == taskId);
+
+            if(foundTask is null)
+                return;
+                
+            this.Tasks.Remove(foundTask);
         }
 
         internal Task FindTask(Guid id)
         {
             return this.Tasks.FirstOrDefault(t => t.Id == id);
-        }
-
-        public class Task
-        {
-            public Task(string name)
-            {
-                this.Id = Guid.NewGuid();
-                this.Name = name;
-                this.Done = false;
-            }
-
-            public Guid Id { get; set; }
-            public string Name { get; set; }
-            public bool Done { get; set; }
-
-            internal void MarkAsDone()
-            {
-                this.Done = true;
-            }
-
-            internal void MarkAsTodo()
-            {
-                this.Done = false;
-            }
         }
     }
 }

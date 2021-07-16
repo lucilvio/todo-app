@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Vue.TodoApp
 {
-    [Route("lists")]
+    [Route("tasks")]
     public class TasksController : ControllerBase
     {
         private readonly TodoAppContext _context;
@@ -19,36 +19,40 @@ namespace Vue.TodoApp
             this._changesListenerHub = changesListenerHub;
         }
 
-        [HttpGet("{id}/tasks")]
-        public async Task<IActionResult> Get(Guid id)
+        [HttpGet]
+        public async Task<IActionResult> Get()
         {
-            var foundList = await this._context.Lists
+            var foundTasks = await this._context.Tasks
                 .AsNoTracking()
-                .Include(l => l.Tasks)
-                .FirstOrDefaultAsync(l => l.Id == id);
+                .ToListAsync();
 
-            if (foundList is null)
-                return NotFound("List not found");
-
-            return Ok(foundList.Tasks.Select(t => new
+            return Ok(foundTasks.Select(t => new
             {
                 id = t.Id,
                 name = t.Name,
-                done = t.Done
+                done = t.Done,
+                important = t.Important,
+                list = t.ListId
             }));
         }
 
-        [HttpPost("{id}/tasks")]
+        [HttpPost]
         public async Task<IActionResult> Post(Guid id, [FromBody] PostTaskRequest request)
         {
-            var foundList = await this._context.Lists
-                .Include(l => l.Tasks)
-                .FirstOrDefaultAsync(l => l.Id == id);
+            if (request.List.HasValue)
+            {
+                var foundList = this._context.Lists.FirstOrDefault(l => l.Id == request.List.Value);
 
-            if (foundList is null)
-                return NotFound("List not found");
+                if (foundList is null)
+                    return NotFound("List not found");
 
-            foundList.AddTask(request.Name);
+                foundList.AddTask(request.Name);
+            }
+            else
+            {
+                await this._context.Tasks.AddAsync(new Model.Task(request.Name));
+            }
+
             await _context.SaveChangesAsync();
 
             await this.SendTaskChangedEvent();
@@ -56,17 +60,16 @@ namespace Vue.TodoApp
             return Ok();
         }
 
-        [HttpDelete("{id}/tasks/{taskId}")]
-        public async Task<IActionResult> Delete(Guid id, Guid taskId)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var foundList = await this._context.Lists
-                .Include(l => l.Tasks)
+            var foundTask = await this._context.Tasks
                 .FirstOrDefaultAsync(l => l.Id == id);
 
-            if (foundList is null)
-                return NotFound("List not found");
+            if (foundTask is null)
+                return NotFound("Task not found");
 
-            foundList.RemoveTask(taskId);
+            this._context.Remove(foundTask);
             await _context.SaveChangesAsync();
 
             await this.SendTaskChangedEvent();
@@ -74,17 +77,16 @@ namespace Vue.TodoApp
             return Ok();
         }
 
-        [HttpPut("{id}/tasks/{taskId}/done")]
+        [HttpPut("{id}/done")]
         public async Task<IActionResult> Done(Guid id, Guid taskId)
         {
-            var foundList = await this._context.Lists
-                .Include(l => l.Tasks)
+            var foundTask = await this._context.Tasks
                 .FirstOrDefaultAsync(l => l.Id == id);
 
-            if (foundList is null)
-                return NotFound("List not found");
+            if (foundTask is null)
+                return NotFound("Task not found");
 
-            foundList.FindTask(taskId).MarkAsDone();
+            foundTask.MarkAsDone();
             await _context.SaveChangesAsync();
 
             await this.SendTaskChangedEvent();
@@ -92,17 +94,50 @@ namespace Vue.TodoApp
             return Ok();
         }
 
-        [HttpPut("{id}/tasks/{taskId}/undo")]
+        [HttpPut("{id}/undo")]
         public async Task<IActionResult> Undo(Guid id, Guid taskId)
         {
-            var foundList = await this._context.Lists
-                .Include(l => l.Tasks)
+            var foundTask = await this._context.Tasks
                 .FirstOrDefaultAsync(l => l.Id == id);
 
-            if (foundList is null)
-                return NotFound("List not found");
+            if (foundTask is null)
+                return NotFound("Task not found");
 
-            foundList.FindTask(taskId).MarkAsTodo();
+            foundTask.MarkAsTodo();
+            await _context.SaveChangesAsync();
+
+            await this.SendTaskChangedEvent();
+
+            return Ok();
+        }
+
+        [HttpPut("{id}/important")]
+        public async Task<IActionResult> Important(Guid id)
+        {
+            var foundTask = await this._context.Tasks
+                .FirstOrDefaultAsync(l => l.Id == id);
+
+            if (foundTask is null)
+                return NotFound("Task not found");
+
+            foundTask.MarkAsImportant();
+            await _context.SaveChangesAsync();
+
+            await this.SendTaskChangedEvent();
+
+            return Ok();
+        }
+
+        [HttpPut("{id}/not-important")]
+        public async Task<IActionResult> NotImportant(Guid id)
+        {
+            var foundTask = await this._context.Tasks
+                .FirstOrDefaultAsync(l => l.Id == id);
+
+            if (foundTask is null)
+                return NotFound("Task not found");
+
+            foundTask.MarkAsNotImportant();
             await _context.SaveChangesAsync();
 
             await this.SendTaskChangedEvent();
@@ -113,6 +148,6 @@ namespace Vue.TodoApp
         private async Task SendTaskChangedEvent() =>
             await this._changesListenerHub.Clients.All.SendAsync("tasksChanged");
 
-        public record PostTaskRequest(string Name);
+        public record PostTaskRequest(string Name, Guid? List);
     }
 }

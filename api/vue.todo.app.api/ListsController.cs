@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Vue.TodoApp.Model;
 
 namespace Vue.TodoApp
 {
@@ -47,7 +48,7 @@ namespace Vue.TodoApp
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var foundList = await _context.Lists.FirstOrDefaultAsync(l => l.Id == id);
+            var foundList = await _context.Lists.Include(l => l.Tasks).FirstOrDefaultAsync(l => l.Id == id);
 
             if (foundList is null)
                 return NotFound();
@@ -60,7 +61,7 @@ namespace Vue.TodoApp
             return Ok();
         }
 
-        private async Task SendListChangedEvent() =>
+        private async System.Threading.Tasks.Task SendListChangedEvent() =>
             await this._changesListenerHub.Clients.All.SendAsync("listsChanged");
 
         public record PostListRequest(string Name);
