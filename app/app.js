@@ -11,7 +11,7 @@ const appData = {
     methods: {
         async changesListener() {
             const connection = new signalR.HubConnectionBuilder()
-                .withUrl("https://localhost:5001/tasks")
+                .withUrl(this.settings.signalR + "/tasks")
                 .configureLogging(signalR.LogLevel.Information)
                 .build();
 

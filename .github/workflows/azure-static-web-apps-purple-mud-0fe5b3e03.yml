@@ -22,7 +22,8 @@ jobs:
         with:
           files: './app/settings.json'
         env:
-          api: https://vue-todo-app-api.azurewebsites.net        
+          api: https://vue-todo-app-api.azurewebsites.net
+          signalR: https://vue-todo-app-api.azurewebsites.net
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
