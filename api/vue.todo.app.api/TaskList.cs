@@ -27,33 +27,33 @@ namespace Vue.TodoApp
             this.Tasks = this.Tasks.Where(t => t.Id != taskId).ToList();
         }
 
-        internal Task Task(Guid id)
+        internal Task FindTask(Guid id)
         {
             return this.Tasks.FirstOrDefault(t => t.Id == id);
         }
-    }
 
-    public class Task
-    {
-        public Task(string name)
+        public class Task
         {
-            this.Id = Guid.NewGuid();
-            this.Name = name;
-            this.Done = false;
-        }
+            public Task(string name)
+            {
+                this.Id = Guid.NewGuid();
+                this.Name = name;
+                this.Done = false;
+            }
 
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public bool Done { get; set; }
+            public Guid Id { get; set; }
+            public string Name { get; set; }
+            public bool Done { get; set; }
 
-        internal void MarkAsDone()
-        {
-            this.Done = true;
-        }
+            internal void MarkAsDone()
+            {
+                this.Done = true;
+            }
 
-        internal void MarkAsTodo()
-        {
-            this.Done = false;
+            internal void MarkAsTodo()
+            {
+                this.Done = false;
+            }
         }
     }
 }

@@ -21,11 +21,11 @@ namespace Vue.TodoApp
             modelBuilder.Entity<TaskList>().Property(p => p.Id).ValueGeneratedNever();
             modelBuilder.Entity<TaskList>().HasData(new TaskList("Default"));
             
-            modelBuilder.Entity<Task>().ToTable("Tasks");
-            modelBuilder.Entity<Task>().Property(p => p.Name).IsRequired();
-            modelBuilder.Entity<Task>().Property(p => p.Done).IsRequired();           
-            modelBuilder.Entity<Task>().Property(p => p.Id).ValueGeneratedNever();
-            modelBuilder.Entity<Task>().HasOne<TaskList>().WithMany(t => t.Tasks).IsRequired();
+            modelBuilder.Entity<TaskList.Task>().ToTable("Tasks");
+            modelBuilder.Entity<TaskList.Task>().Property(p => p.Name).IsRequired();
+            modelBuilder.Entity<TaskList.Task>().Property(p => p.Done).IsRequired();           
+            modelBuilder.Entity<TaskList.Task>().Property(p => p.Id).ValueGeneratedNever();
+            modelBuilder.Entity<TaskList.Task>().HasOne<TaskList>().WithMany(t => t.Tasks).IsRequired();
 
             base.OnModelCreating(modelBuilder);
         }

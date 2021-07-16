@@ -20,6 +20,10 @@ const appData = {
             connection.on("tasksChanged", () => {
                 this.loadTasks();
             });
+
+            connection.on("listsChanged", () => {
+                this.loadLists();
+            });
         },
         async loadSettings() {
             try {
@@ -94,8 +98,7 @@ const appData = {
             if (response.ok) {                
                 toastr.success("Registered!")
                 
-                this.listName = "";
-                await this.loadLists();
+                this.listName = "";        
             } else {
                 if(response.status >= 500)
                     return;

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Vue.TodoApp
@@ -10,10 +11,12 @@ namespace Vue.TodoApp
     public class ListsController : ControllerBase
     {
         private readonly TodoAppContext _context;
+        private readonly IHubContext<ChangesListenerHub> _changesListenerHub;
 
-        public ListsController(TodoAppContext context)
+        public ListsController(TodoAppContext context, IHubContext<ChangesListenerHub> changesListenerHub)
         {
             this._context = context;
+            this._changesListenerHub = changesListenerHub;
         }
 
         [HttpGet]
@@ -36,6 +39,8 @@ namespace Vue.TodoApp
             await this._context.AddAsync(new TaskList(request.Name));
             await _context.SaveChangesAsync();
 
+            await this.SendListChangedEvent();
+
             return Ok();
         }
 
@@ -50,8 +55,13 @@ namespace Vue.TodoApp
             _context.Lists.Remove(foundList);
             await _context.SaveChangesAsync();
 
+            await this.SendListChangedEvent();
+
             return Ok();
         }
+
+        private async Task SendListChangedEvent() =>
+            await this._changesListenerHub.Clients.All.SendAsync("listsChanged");
 
         public record PostListRequest(string Name);
     }
