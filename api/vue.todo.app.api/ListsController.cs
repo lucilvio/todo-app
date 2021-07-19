@@ -11,11 +11,13 @@ namespace Vue.TodoApp
     [Route("lists")]
     public class ListsController : ControllerBase
     {
+        private readonly Auth _auth;
         private readonly TodoAppContext _context;
         private readonly IHubContext<ChangesListenerHub> _changesListenerHub;
 
-        public ListsController(TodoAppContext context, IHubContext<ChangesListenerHub> changesListenerHub)
+        public ListsController(TodoAppContext context, Auth auth, IHubContext<ChangesListenerHub> changesListenerHub)
         {
+            this._auth = auth;
             this._context = context;
             this._changesListenerHub = changesListenerHub;
         }
@@ -23,11 +25,14 @@ namespace Vue.TodoApp
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var lists = await this._context.Lists
+            var loggedUser = this._auth.GetLoggedUser();
+            
+            var foundUser = await this._context.Users
                 .AsNoTracking()
-                .ToListAsync();
-
-            return Ok(lists.Select(l => new
+                .Include(u => u.Lists)
+                .FirstOrDefaultAsync(u => u.Id == loggedUser.Id);
+                
+            return Ok(foundUser.Lists.Select(l => new
             {
                 id = l.Id,
                 name = l.Name
@@ -37,7 +42,13 @@ namespace Vue.TodoApp
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] PostListRequest request)
         {
-            await this._context.AddAsync(new TaskList(request.Name));
+            var loggedUser = this._auth.GetLoggedUser();
+            
+            var foundUser = await this._context.Users
+                .Include(u => u.Lists)
+                .FirstOrDefaultAsync(u => u.Id == loggedUser.Id);
+
+            foundUser.AddList(request.Name);
             await _context.SaveChangesAsync();
 
             await this.SendListChangedEvent();

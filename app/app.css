@@ -1,7 +1,3 @@
-body {
-    background-color: rgb(240, 240, 240);
-}
-
 .form-check-input {
     cursor: pointer;
 }
@@ -62,4 +58,8 @@ ul.menu li.new-list {
 
 ul.menu li.selected {
     font-weight: bold;
+}
+
+.logout {
+    cursor: pointer;
 }

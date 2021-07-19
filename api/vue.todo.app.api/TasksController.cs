@@ -10,23 +10,28 @@ namespace Vue.TodoApp
     [Route("tasks")]
     public class TasksController : ControllerBase
     {
+        private readonly Auth _auth;
         private readonly TodoAppContext _context;
         private readonly IHubContext<ChangesListenerHub> _changesListenerHub;
 
-        public TasksController(TodoAppContext context, IHubContext<ChangesListenerHub> changesListenerHub)
+        public TasksController(TodoAppContext context, Auth auth, IHubContext<ChangesListenerHub> changesListenerHub)
         {
             this._context = context;
+            this._auth = auth;
             this._changesListenerHub = changesListenerHub;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var foundTasks = await this._context.Tasks
+            var loggedUser = this._auth.GetLoggedUser();
+            
+            var foundUser = await this._context.Users
                 .AsNoTracking()
-                .ToListAsync();
+                .Include(u => u.Tasks)
+                .FirstOrDefaultAsync(u => u.Id == loggedUser.Id);
 
-            return Ok(foundTasks.Select(t => new
+            return Ok(foundUser.Tasks.Select(t => new
             {
                 id = t.Id,
                 name = t.Name,
@@ -37,21 +42,18 @@ namespace Vue.TodoApp
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Guid id, [FromBody] PostTaskRequest request)
+        public async Task<IActionResult> Post([FromBody] PostTaskRequest request)
         {
-            if (request.List.HasValue)
-            {
-                var foundList = this._context.Lists.FirstOrDefault(l => l.Id == request.List.Value);
+            var loggedUser = this._auth.GetLoggedUser();
+            
+            var foundUser = await this._context.Users
+                .Include(u => u.Lists)
+                .FirstOrDefaultAsync(u => u.Id == loggedUser.Id);
 
-                if (foundList is null)
-                    return NotFound("List not found");
-
-                foundList.AddTask(request.Name);
-            }
+            if (request.List is not null && request.List.HasValue)
+                foundUser.AddTaskToList(request.Name, request.List.Value);
             else
-            {
-                await this._context.Tasks.AddAsync(new Model.Task(request.Name));
-            }
+                foundUser.AddTask(request.Name);
 
             await _context.SaveChangesAsync();
 

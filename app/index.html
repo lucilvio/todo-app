@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,104 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vue Todo App</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
-    <link href="app.css" rel="stylesheet" />
 </head>
 
 <body>
-    <div id="app" class="container-fluid ">
-        <div class="row mx-5 mt-4 gx-5">
-            <div class="col-3">
-                <div class="row p-3 shadow-sm bg-body rounded">
-                    <span class="text-muted mb-4"> Todo App </span>
-                    <ul class="menu">
-                        <li v-bind:class="{'selected': selectedRoute.name === 'importantTasks' }" v-on:click="setRoute('importantTasks')">
-                            <span><i class="fas fa-bookmark me-3"></i>Important</span>
-                            <span v-if="importantTasksCounter > 0" class="taks-counter">{{ importantTasksCounter }}</span>
-                        </li>
-                        <li v-bind:class="{'selected': selectedRoute.name === 'tasks' }" v-on:click="setRoute('tasks')">
-                            <span><i class="far fa-clipboard-list-check me-3"></i>Tasks</span>
-                            <span v-if="tasksCounter > 0" class="taks-counter">{{ tasksCounter }}</span>
-                        </li>
-                        <hr>
-                        <li class="mb-2 cursor-pointer" v-bind:class="{'selected': selectedRoute.title === list.name }"
-                            v-for="list in lists" v-on:click="setRoute('list', list)">
-                            <span><i class="far fa-bars me-3"></i>{{ list.name }}</span>&nbsp;
-                            <span v-if="listTasksCounter(list.id) > 0" class="taks-counter">{{ listTasksCounter(list.id) }}</span>
-                            <span v-on:click="removeList(list.id)"><i class="far fa-trash-alt remove-list"></i></span>
-
-                        </li>
-                        <li class="new-list" v-on:click="newList">
-                            <span><i class="fal fa-plus me-3 text-primary"></i><input v-model="listName" v-on:blur="addList" 
-                                placeholder="New Task List"></span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-9">
-                <h1><i v-bind:class="selectedRoute.icon" class="me-3 mb-3"></i>{{ selectedRoute.title }}</h1>
-
-                <div class="row shadow-sm bg-body p-3 rounded">
-                    <div class="col-7 col-sm-8 col-md-9 col-lg-10">
-                        <input class="form-control" v-model="taskName" placeholder="Task Name" />
-                    </div>
-                    <div class="col-5 col-sm-4 col-md-3 col-lg-2">
-                        <button class="btn btn-primary" v-on:click="addTask">Add Task</button>
-                    </div>
-                </div>
-                <div class="row row shadow-sm bg-body p-3 mt-3 rounded">
-                    <div class="col" v-if="filteredTasks.length > 0">
-                        <div class="row my-2" v-for="task in filteredTasks">
-                            <div class="col-1">
-                                <div class="form-check">
-                                    <input class="form-check-input" v-if="task.done" type="checkbox" v-model="task.done"
-                                        v-on:click="uncheckTask(task.id)">
-                                    <input class="form-check-input" v-else-if="!task.done" type="checkbox"
-                                        v-model="task.done" v-on:click="checkTask(task.id)">
-                                </div>
-                            </div>
-                            <div class="col-9">
-                                <span v-bind:class="{'done-task': task.done}"> {{ task.name }} </span>
-                            </div>
-                            <div class="col-1">
-                                <span class="important-flag" v-if="task.important" v-on:click="markTaskAsNotImportant(task.id)"><i class="fas fa-bookmark"></i></span>
-                                <span class="important-flag" v-else v-on:click="markTaskAsImportant(task.id)"><i class="far fa-bookmark"></i></span>
-                            </div>
-                            <div class="col-1">
-                                <span v-on:click="removeTask(task.id)"><i class="far fa-trash-alt remove-task"></i></span>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <span class=" text-center text-muted small"> Tasks {{ tasks.filter(t => t.done).length}} /
-                                <span class="fw-bold"> {{ tasks.length }} </span> </span>
-                        </div>
-                    </div>
-                    <div class="col-12" v-else class="text-center">
-                        <span class="text-muted">What are you waiting for? Add your first task.</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col text-center mt-2">
-                        <span class="copyright"> Copyright Lucilvio Lima </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.1.0/uuidv4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@3.1.2/dist/vue.global.prod.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.8/signalr.min.js"></script>
-    <script src="app.js"></script>
+    <script type="module" src="auth.js"></script>
 </body>
 
 </html>
