@@ -13,6 +13,10 @@
         integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
     <link rel="stylesheet" href="site.css" />
+
+    <script>
+        window.location.anonymousAccess = true;
+    </script>
 </head>
 
 <body>
@@ -27,10 +31,20 @@
                 </div>
                 <div class="row shadow-sm bg-body rounded p-5">
                     <div class="col-12">
-                        <p class="mb-2 text-muted"> Infrom your access info </p>
-                        <input type="text" v-model="user" class="form-control mb-2" placeholder="User" required />
-                        <input type="password" v-model="password" class="form-control mb-2" placeholder="Password" required />
-                        <button class="btn btn-primary mt-1" v-on:click="login">Login</button>
+                        <form v-on:submit="submit">
+                            <p class="mb-3 text-muted"> Infrom your access info </p>
+                            <input type="email" v-model="form.user" class="form-control mb-2" placeholder="Your Email"
+                                required />
+                            <input type="password" v-model="form.password" class="form-control mb-2"
+                                placeholder="Your Password" required />
+
+                            <button type="submit" class="btn btn-primary mt-1">Login</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12 text-center text-muted">
+                        <p> Not registered yet? <a href="register.html">Click Here</a></p>
                     </div>
                 </div>
             </div>
@@ -44,6 +58,8 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@3.1.2/dist/vue.global.prod.js"></script>
     <script type="module" src="./auth.js"></script>
     <script type="module" src="./settings.js"></script>
+    <script type="module" src="./login.services.js"></script>
+    <script type="module" src="./messages.js"></script>
     <script type="module" src="./login.js"></script>
 </body>
 
