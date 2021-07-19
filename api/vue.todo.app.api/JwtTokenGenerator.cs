@@ -1,6 +1,5 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
@@ -18,9 +17,10 @@ namespace Vue.TodoApp
             this._settings = settings != null ? settings.Value : throw new System.ArgumentNullException(nameof(settings));
         }
 
-        public string Generate(User user, string issuer, string audience)
+        public GeneratedToken Generate(User user, string issuer, string audience)
         {
             var now = DateTime.UtcNow;
+            var expiresIn = now.AddHours(_settings.Jwt.Expiration);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_settings.Jwt.Secret);
@@ -35,7 +35,7 @@ namespace Vue.TodoApp
                 IssuedAt = now,
                 Issuer = issuer,
                 Audience = audience,                
-                Expires = now.AddHours(_settings.Jwt.Expiration),
+                Expires = expiresIn,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
@@ -54,13 +54,15 @@ namespace Vue.TodoApp
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_settings.Jwt.Secret))
                 }, out var validatedToken);
 
-                return stringToken;
+                return new GeneratedToken(stringToken, new DateTimeOffset(expiresIn).ToUnixTimeSeconds());
             }
             catch (Exception ex)
             {
                 throw new TokenGenerationException($"Error while trying to generate token", ex);
             }
         }
+
+        public record GeneratedToken(string Token, long ExpiresIn);
     }
 
     public class TokenGenerationException : Exception

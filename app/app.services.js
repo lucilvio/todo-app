@@ -23,11 +23,10 @@ async function removeList(id) {
     try {
         await fetch(settings.api + "/lists/" + id, { 
             method: "delete",
-            headers: { "Authorization": "Bearer " + this.user.token }
+            headers: { "Authorization": "Bearer " + user.token }
         });
-        toastr.success("List Deleted!");
 
-        this.setRoute("tasks");
+        toastr.success("List Deleted!");        
     } catch (error) {
         toastr.error("Error while trying to delete list", "Ooops!");
         console.error(error, "Ooops!");
@@ -83,28 +82,28 @@ async function addTask(task) {
 async function checkTask(taskId) {
     await fetch(settings.api + "/tasks/" + taskId + "/done", { 
         method: "put",
-        headers: { "Authorization": "Bearer " + this.user.token } 
+        headers: { "Authorization": "Bearer " + user.token } 
     });
 }
 
 async function uncheckTask(taskId) {
     await fetch(settings.api + "/tasks/" + taskId + "/undo", { 
         method: "put",
-        headers: { "Authorization": "Bearer " + this.user.token } 
+        headers: { "Authorization": "Bearer " + user.token } 
     });
 }
 
 async function markTaskAsImportant(taskId) {
     await fetch(settings.api + "/tasks/" + taskId + "/important", { 
         method: "put",
-        headers: { "Authorization": "Bearer " + this.user.token } 
+        headers: { "Authorization": "Bearer " + user.token } 
     });
 }
 
 async function markTaskAsNotImportant(taskId) {
     await fetch(settings.api + "/tasks/" + taskId + "/not-important", { 
         method: "put",
-        headers: { "Authorization": "Bearer " + this.user.token } 
+        headers: { "Authorization": "Bearer " + user.token } 
     });
 }
 
@@ -112,7 +111,7 @@ async function removeTask(taskId) {
     try {
         await fetch(settings.api + "/tasks/" + taskId, { 
             method: "delete",
-            headers: { "Authorization": "Bearer " + this.user.token } 
+            headers: { "Authorization": "Bearer " + user.token } 
         });
         toastr.success("Task Deleted!");
     } catch (error) {
@@ -121,19 +120,12 @@ async function removeTask(taskId) {
     }
 }
 
-async function addList() {
-    if (!this.listName)
-        return;
-
-    const list = {
-        Name: this.listName
-    };
-
+async function addList(list) {
     const response = await fetch(settings.api + "/lists", { 
         method: "post", 
         body: JSON.stringify(list), 
         headers: { "Content-Type": "application/json",
-            "Authorization": "Bearer " + this.user.token }
+            "Authorization": "Bearer " + user.token }
     });                
 
     if (response.ok) {
@@ -151,7 +143,14 @@ async function addList() {
 }
 
 export const services = {
+    addList: addList,
     loadLists: loadLists,
+    removeList: removeList,
+    addTask: addTask,
     loadTasks: loadTasks,
-    addTask: addTask
+    removeTask: removeTask,
+    checkTask: checkTask,
+    uncheckTask: uncheckTask,
+    markTaskAsImportant: markTaskAsImportant,
+    markTaskAsNotImportant: markTaskAsNotImportant
 }

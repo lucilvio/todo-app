@@ -1,12 +1,13 @@
 const key = "user";
+const now = Math.floor(Date.now() / 1000);
 
 function verifyToken() {
-    if (window.location.pathname === "/login.html")
+    if (window.location.anonymousAccess)
         return;
 
-    const user = localStorage.getItem(key);
+    const userToken = JSON.parse(localStorage.getItem(key));
 
-    if (!user) {
+    if (!userToken || !userToken.expiresIn || userToken.expiresIn < now) {
         window.location.href = "login.html";
     }
 }

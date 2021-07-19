@@ -41,21 +41,14 @@ const appData = {
             this.lists = await services.loadLists();
         },
         async removeList(id) {
-            try {
-                await fetch(settings.api + "/lists/" + id, { 
-                    method: "delete",
-                    headers: { "Authorization": "Bearer " + this.user.token }
-                });
-                toastr.success("List Deleted!");
-
-                this.setRoute("tasks");
-            } catch (error) {
-                toastr.error("Error while trying to delete list", "Ooops!");
-                console.error(error, "Ooops!");
-            }
+            await services.removeList(id);
+            this.setRoute("tasks");
         },
         async loadTasks() {
-            this.tasks = await services.loadTasks();
+            const loadedTasks = await services.loadTasks();
+
+            if(loadedTasks)
+                this.tasks = loadedTasks;
         },
         async addTask() {
             const task = {
@@ -66,40 +59,19 @@ const appData = {
             await services.addTask(task);
         },
         async checkTask(taskId) {
-            await fetch(settings.api + "/tasks/" + taskId + "/done", { 
-                method: "put",
-                headers: { "Authorization": "Bearer " + this.user.token } 
-            });
+            await services.checkTask(taskId);
         },
         async uncheckTask(taskId) {
-            await fetch(settings.api + "/tasks/" + taskId + "/undo", { 
-                method: "put",
-                headers: { "Authorization": "Bearer " + this.user.token } 
-            });
+            await services.uncheckTask(taskId);
         },
         async markTaskAsImportant(taskId) {
-            await fetch(settings.api + "/tasks/" + taskId + "/important", { 
-                method: "put",
-                headers: { "Authorization": "Bearer " + this.user.token } 
-            });
+            await services.markTaskAsImportant(taskId);
         },
         async markTaskAsNotImportant(taskId) {
-            await fetch(settings.api + "/tasks/" + taskId + "/not-important", { 
-                method: "put",
-                headers: { "Authorization": "Bearer " + this.user.token } 
-            });
+            await services.markTaskAsNotImportant(taskId);
         },
         async removeTask(taskId) {
-            try {
-                await fetch(settings.api + "/tasks/" + taskId, { 
-                    method: "delete",
-                    headers: { "Authorization": "Bearer " + this.user.token } 
-                });
-                toastr.success("Task Deleted!");
-            } catch (error) {
-                toastr.error("Error while trying to delete task", "Oooops!");
-                console.error(error);
-            }
+            await services.removeTask(taskId);
         },
 
         async addList() {
@@ -110,25 +82,7 @@ const appData = {
                 Name: this.listName
             };
 
-            const response = await fetch(settings.api + "/lists", { 
-                method: "post", 
-                body: JSON.stringify(list), 
-                headers: { "Content-Type": "application/json",
-                    "Authorization": "Bearer " + this.user.token }
-            });                
-
-            if (response.ok) {
-                toastr.success("Registered!")
-
-                this.listName = "";
-            } else {
-                if (response.status >= 500)
-                    return;
-
-                const json = await response.json();
-                toastr.error(json.message, "Ooops!");
-                return;
-            }
+            await services.addList(list);
         },
         listTasksCounter(id) {
             return this.tasks.filter(t => t.list === id).length;
@@ -145,7 +99,7 @@ const appData = {
             this.selectedRoute.action(params);
         },
         goToTasks() {
-            this.selectedList = { id: null, name: "" };
+            this.selectedList = { id: null, name: "" };            
             this.filteredTasks = this.tasks.filter(t => !t.list)
         },
         goToImportantTasks() {

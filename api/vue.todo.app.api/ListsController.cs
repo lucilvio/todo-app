@@ -8,7 +8,7 @@ using Vue.TodoApp.Model;
 
 namespace Vue.TodoApp
 {
-    [Route("lists")]
+    [Route("[controller]")]
     public class ListsController : ControllerBase
     {
         private readonly Auth _auth;

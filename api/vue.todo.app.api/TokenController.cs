@@ -37,13 +37,14 @@ namespace Vue.TodoApp
 
             try
             {
-                var token = _tokenGenerator.Generate(foundUser, issuer, audience);
+                var generatedToken = _tokenGenerator.Generate(foundUser, issuer, audience);
 
                 return Ok(new
                 {
                     name = foundUser.Name,
                     email = foundUser.Email,
-                    token
+                    expiresIn = generatedToken.ExpiresIn,
+                    token = generatedToken.Token
                 });
             }
             catch (TokenGenerationException ex)

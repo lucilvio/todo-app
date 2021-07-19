@@ -1,48 +1,30 @@
-import { settings } from "./settings.js";
-import { auth } from "./auth.js";
+import { auth } from "./auth.js"
+import { message } from "./messages.js";
+import { services } from "./login.services.js";
 
 const loginData = {
     data() {
         return {
-            user: "",
-            password: ""
+            form: {}
         }
     },
     methods: {
-        async login() {
-            const request = {
-                user: this.user,
-                password: this.password
-            };
+        async submit(e) {
+            if(!this.form.user || !this.form.password)
+                return;
 
+            e.preventDefault();
+            
             try {
-                const reponse = await fetch(settings.api + "/token", {
-                    method: "post",
-                    body: JSON.stringify(request),
-                    headers: { 
-                        "Authorization": "Bearer " + this.user.token,
-                        "Content-Type": "application/json",
-                        "iss": settings.app,
-                        "aud": settings.host
-                    }
+                const loggedUser = await services.login({
+                    user: this.form.user,
+                    password: this.form.password
                 });
     
-                if(!reponse.ok)
-                {
-                    if(reponse.status === 404)
-                        return;
-                    
-                    var data = await reponse.json();
-                    toastr.error(data.message, "Oooops!");
-                    return;
-                }
-
-                var data = await reponse.json();
-    
-                auth.login(data);
+                auth.login(loggedUser);
                 window.location.href = "app.html";                
             } catch (error) {
-                toastr.error("Error while trying to login. Details: " + error);
+                message.error(error);
             }
         }
     }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Vue.TodoApp
 {
-    [Route("tasks")]
+    [Route("[controller]")]
     public class TasksController : ControllerBase
     {
         private readonly Auth _auth;
