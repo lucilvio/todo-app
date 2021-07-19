@@ -66,7 +66,7 @@ namespace Vue.TodoApp
 
             services.AddControllers(options =>
             {
-                options.Filters.Add(new AuthorizeFilter());
+                // options.Filters.Add(new AuthorizeFilter());
             });
 
             services.AddDbContext<TodoAppContext>(options =>
