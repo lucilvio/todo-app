@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,9 +34,10 @@ namespace Vue.TodoApp
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins(appSettings.AllowedOrigins).AllowCredentials();
-                    builder.WithOrigins(appSettings.AllowedOrigins).AllowAnyMethod();
-                    builder.WithOrigins(appSettings.AllowedOrigins).AllowAnyHeader();
+                    builder.WithOrigins(appSettings.AllowedOrigin).AllowCredentials();
+                    builder.WithOrigins(appSettings.AllowedOrigin).AllowAnyMethod();
+                    builder.WithOrigins(appSettings.AllowedOrigin).AllowAnyHeader();
+                    builder.WithOrigins(appSettings.AllowedOrigin).SetPreflightMaxAge(TimeSpan.FromHours(12));
                 });
             });
 

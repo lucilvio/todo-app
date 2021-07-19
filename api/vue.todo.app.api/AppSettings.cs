@@ -4,7 +4,7 @@ namespace Vue.TodoApp
 {
     public class AppSettings
     {
-        public string[] AllowedOrigins { get; set; }
+        public string AllowedOrigin { get; set; }
         public JwtSettings Jwt { get; set; }
 
         public class JwtSettings
