@@ -2,7 +2,8 @@ import { settings } from "./settings.js";
 
 async function login(user) {
     const reponse = await fetch(settings.api + "/token", {
-        method: "post",
+        method: "POST",
+        credentials: "omit",
         body: JSON.stringify(user),
         headers: {
             "Content-Type": "application/json",
