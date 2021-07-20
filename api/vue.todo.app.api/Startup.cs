@@ -1,14 +1,17 @@
 using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Vue.TodoApp
@@ -59,6 +62,9 @@ namespace Vue.TodoApp
 
             services.AddAuthorization();
 
+            services.AddHealthChecks()
+                .AddCheck<HealthChecker>("sample");
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddSingleton<JwtTokenGenerator>();
@@ -90,6 +96,9 @@ namespace Vue.TodoApp
             {
                 config.MapHub<ChangesListenerHub>("/change-listener");
                 config.MapControllers();
+                config.MapHealthChecks("/health", new HealthCheckOptions {
+                    AllowCachingResponses = false
+                });
             });
         }
     }
