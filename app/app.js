@@ -57,6 +57,7 @@ const appData = {
             };
             
             await services.addTask(task);
+            this.taskName = "";
         },
         async checkTask(taskId) {
             await services.checkTask(taskId);
