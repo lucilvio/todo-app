@@ -1,6 +1,7 @@
-import { settings }  from "./settings.js";
-import { auth } from "./auth.js";
+import { settings } from "./settings/settings.js.js";
+import { auth } from "./authentication/auth.js.js";
 import { services } from "./app.services.js";
+
 
 const appData = {
     data() {
@@ -47,7 +48,7 @@ const appData = {
         async loadTasks() {
             const loadedTasks = await services.loadTasks();
 
-            if(loadedTasks)
+            if (loadedTasks)
                 this.tasks = loadedTasks;
         },
         async addTask() {
@@ -55,7 +56,7 @@ const appData = {
                 name: this.taskName,
                 list: this.selectedList ? this.selectedList.id : null
             };
-            
+
             await services.addTask(task);
             this.taskName = "";
         },
@@ -100,7 +101,7 @@ const appData = {
             this.selectedRoute.action(params);
         },
         goToTasks() {
-            this.selectedList = { id: null, name: "" };            
+            this.selectedList = { id: null, name: "" };
             this.filteredTasks = this.tasks.filter(t => !t.list)
         },
         goToImportantTasks() {
@@ -118,10 +119,10 @@ const appData = {
         }
     },
     computed: {
-        tasksCounter: function () {
+        tasksCounter: function() {
             return this.tasks.filter(t => !t.list).length;
         },
-        importantTasksCounter: function () {
+        importantTasksCounter: function() {
             return this.tasks.filter(t => t.important).length;
         }
     },

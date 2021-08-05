@@ -1,3 +1,4 @@
+.vscode
 api/vue.todo.app.api/*.db
 api/vue.todo.app.api/bin
 api/vue.todo.app.api/obj

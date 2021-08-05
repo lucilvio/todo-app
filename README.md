@@ -1,7 +1,7 @@
 # vue-todo-app
 
 Site  
-[Vue Todo App](https://purple-mud-0fe5b3e03.azurestaticapps.net/)  
+[Vue Todo App](https://todo.lucilvio.com/)  
   
 Front End  
 VueJS 3  

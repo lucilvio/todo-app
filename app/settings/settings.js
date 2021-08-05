@@ -10,22 +10,21 @@ function saveSettingsToCache(settings) {
 
 async function loadSettings() {
     const cachedSettings = loadCachedSettings();
-    
+
     if (cachedSettings)
         return JSON.parse(cachedSettings);
-    
+
     const settingsFile = "settings.json";
-    
+
     try {
 
-        const response = await fetch(settingsFile);
+        const response = await fetch("../" + settingsFile);
         const data = await response.json();
 
         saveSettingsToCache(data);
-        
+
         return data;
-    }
-    catch (error) {
+    } catch (error) {
         console.error("Error while trying to load settings on " + settingsFile + ". Details: " + error);
     }
 }

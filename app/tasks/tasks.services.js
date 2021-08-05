@@ -1,16 +1,16 @@
-import { settings }  from "./settings.js";
-import { auth } from "./auth.js";
+import { settings } from "../settings/settings.js";
+import { auth } from "../authentication/auth.js";
 
 const user = auth.getUser();
 
 async function loadLists() {
     try {
         const response = await fetch(settings.api + "/lists", {
-            method: "get",                    
+            method: "get",
             headers: { "Authorization": "Bearer " + user.token }
         });
 
-        if(!response.ok)
+        if (!response.ok)
             return;
 
         return await response.json();
@@ -21,12 +21,12 @@ async function loadLists() {
 
 async function removeList(id) {
     try {
-        await fetch(settings.api + "/lists/" + id, { 
+        await fetch(settings.api + "/lists/" + id, {
             method: "delete",
             headers: { "Authorization": "Bearer " + user.token }
         });
 
-        toastr.success("List Deleted!");        
+        toastr.success("List Deleted!");
     } catch (error) {
         toastr.error("Error while trying to delete list", "Ooops!");
         console.error(error, "Ooops!");
@@ -38,11 +38,11 @@ async function loadTasks() {
 
     try {
         response = await fetch(settings.api + "/tasks", {
-            method: "get",                    
+            method: "get",
             headers: { "Authorization": "Bearer " + user.token }
         });
 
-        if(!response.ok)
+        if (!response.ok)
             return;
 
         return await response.json();
@@ -54,11 +54,13 @@ async function loadTasks() {
 
 async function addTask(task) {
     try {
-        const response = await fetch(settings.api + "/tasks", { 
-            method: "post", 
-            body: JSON.stringify(task), 
-            headers: { "Content-Type": "application/json", 
-                "Authorization": "Bearer " + user.token } 
+        const response = await fetch(settings.api + "/tasks", {
+            method: "post",
+            body: JSON.stringify(task),
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + user.token
+            }
         });
 
         if (response.ok) {
@@ -80,38 +82,38 @@ async function addTask(task) {
 }
 
 async function checkTask(taskId) {
-    await fetch(settings.api + "/tasks/" + taskId + "/done", { 
+    await fetch(settings.api + "/tasks/" + taskId + "/done", {
         method: "put",
-        headers: { "Authorization": "Bearer " + user.token } 
+        headers: { "Authorization": "Bearer " + user.token }
     });
 }
 
 async function uncheckTask(taskId) {
-    await fetch(settings.api + "/tasks/" + taskId + "/undo", { 
+    await fetch(settings.api + "/tasks/" + taskId + "/undo", {
         method: "put",
-        headers: { "Authorization": "Bearer " + user.token } 
+        headers: { "Authorization": "Bearer " + user.token }
     });
 }
 
 async function markTaskAsImportant(taskId) {
-    await fetch(settings.api + "/tasks/" + taskId + "/important", { 
+    await fetch(settings.api + "/tasks/" + taskId + "/important", {
         method: "put",
-        headers: { "Authorization": "Bearer " + user.token } 
+        headers: { "Authorization": "Bearer " + user.token }
     });
 }
 
 async function markTaskAsNotImportant(taskId) {
-    await fetch(settings.api + "/tasks/" + taskId + "/not-important", { 
+    await fetch(settings.api + "/tasks/" + taskId + "/not-important", {
         method: "put",
-        headers: { "Authorization": "Bearer " + user.token } 
+        headers: { "Authorization": "Bearer " + user.token }
     });
 }
 
 async function removeTask(taskId) {
     try {
-        await fetch(settings.api + "/tasks/" + taskId, { 
+        await fetch(settings.api + "/tasks/" + taskId, {
             method: "delete",
-            headers: { "Authorization": "Bearer " + user.token } 
+            headers: { "Authorization": "Bearer " + user.token }
         });
         toastr.success("Task Deleted!");
     } catch (error) {
@@ -121,12 +123,14 @@ async function removeTask(taskId) {
 }
 
 async function addList(list) {
-    const response = await fetch(settings.api + "/lists", { 
-        method: "post", 
-        body: JSON.stringify(list), 
-        headers: { "Content-Type": "application/json",
-            "Authorization": "Bearer " + user.token }
-    });                
+    const response = await fetch(settings.api + "/lists", {
+        method: "post",
+        body: JSON.stringify(list),
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + user.token
+        }
+    });
 
     if (response.ok) {
         toastr.success("Registered!")

@@ -1,4 +1,4 @@
-import { settings } from "./settings.js";
+import { settings } from "../settings/settings.js";
 
 async function login(user) {
     const reponse = await fetch(settings.api + "/token", {

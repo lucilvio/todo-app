@@ -7,18 +7,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vue Todo App</title>
 
-    <script type="module" src="auth.js"></script>
+    <script type="module" src="../authentication/auth.js"></script>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
-    <link rel="stylesheet" href="site.css" />
-    <link href="app.css" rel="stylesheet" />
+    <link href="../loader/loader.css" rel="stylesheet" />
+    <link href="../site.css" rel="stylesheet" />
+    <link href="tasks.css" rel="stylesheet" />
 </head>
 
 <body>
+    <div class="loader"></div>
     <div id="app" class="container-fluid ">
         <div class="row mx-5 mt-4 gx-5">
             <div class="col-3">
@@ -26,8 +26,7 @@
                     <p><span class="text-muted mb-4"> Todo App </span></p>
                     <p><i class="fa fa-user me-3"></i><b class="text-primary">{{ user.name }}</b><span v-on:click="logout" class="pull-right logout"><i class="fa fa-sign-out"></i></span></p>
                     <ul class="menu">
-                        <li v-bind:class="{'selected': selectedRoute.name === 'importantTasks' }"
-                            v-on:click="setRoute('importantTasks')">
+                        <li v-bind:class="{'selected': selectedRoute.name === 'importantTasks' }" v-on:click="setRoute('importantTasks')">
                             <span><i class="fas fa-bookmark me-3"></i>Important</span>
                             <span v-if="importantTasksCounter > 0" class="taks-counter">{{ importantTasksCounter
                                 }}</span>
@@ -37,8 +36,7 @@
                             <span v-if="tasksCounter > 0" class="taks-counter">{{ tasksCounter }}</span>
                         </li>
                         <hr>
-                        <li class="mb-2 cursor-pointer" v-bind:class="{'selected': selectedRoute.title === list.name }"
-                            v-for="list in lists" v-on:click="setRoute('list', list)">
+                        <li class="mb-2 cursor-pointer" v-bind:class="{'selected': selectedRoute.title === list.name }" v-for="list in lists" v-on:click="setRoute('list', list)">
                             <span><i class="far fa-bars me-3"></i>{{ list.name }}</span>&nbsp;
                             <span v-if="listTasksCounter(list.id) > 0" class="taks-counter">{{ listTasksCounter(list.id)
                                 }}</span>
@@ -68,18 +66,15 @@
                         <div class="row my-2" v-for="task in filteredTasks">
                             <div class="col-1">
                                 <div class="form-check">
-                                    <input class="form-check-input" v-if="task.done" type="checkbox" v-model="task.done"
-                                        v-on:click="uncheckTask(task.id)">
-                                    <input class="form-check-input" v-else-if="!task.done" type="checkbox"
-                                        v-model="task.done" v-on:click="checkTask(task.id)">
+                                    <input class="form-check-input" v-if="task.done" type="checkbox" v-model="task.done" v-on:click="uncheckTask(task.id)">
+                                    <input class="form-check-input" v-else-if="!task.done" type="checkbox" v-model="task.done" v-on:click="checkTask(task.id)">
                                 </div>
                             </div>
                             <div class="col-9">
                                 <span v-bind:class="{'done-task': task.done}"> {{ task.name }} </span>
                             </div>
                             <div class="col-1">
-                                <span class="important-flag" v-if="task.important"
-                                    v-on:click="markTaskAsNotImportant(task.id)"><i class="fas fa-bookmark"></i></span>
+                                <span class="important-flag" v-if="task.important" v-on:click="markTaskAsNotImportant(task.id)"><i class="fas fa-bookmark"></i></span>
                                 <span class="important-flag" v-else v-on:click="markTaskAsImportant(task.id)"><i
                                         class="far fa-bookmark"></i></span>
                             </div>
@@ -107,15 +102,16 @@
 
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.1.0/uuidv4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@3.1.2/dist/vue.global.prod.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.8/signalr.min.js"></script>
-    <script type="module" src="./settings.js"></script>
-    <script type="module" src="./app.services.js"></script>
-    <script type="module" src="./app.js"></script>
+    <script type="module" src="../settings/settings.js"></script>
+    <script type="module" src="../loader/loader.js"></script>
+    <script type="module" src="../fetch-interceptor/fetch-interceptor.js"></script>
+    <script type="module" src="tasks.services.js"></script>
+    <script type="module" src="tasks.js"></script>
 </body>
 
 </html>

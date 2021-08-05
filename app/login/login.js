@@ -1,5 +1,7 @@
-import { auth } from "./auth.js"
-import { message } from "./messages.js";
+import { auth } from "../authentication/auth.js"
+import { messager } from "../messager/messager.js";
+import { loader } from "../loader/loader.js";
+
 import { services } from "./login.services.js";
 
 const loginData = {
@@ -10,21 +12,24 @@ const loginData = {
     },
     methods: {
         async submit(e) {
-            if(!this.form.user || !this.form.password)
+            loader.block();
+
+            if (!this.form.user || !this.form.password)
                 return;
 
             e.preventDefault();
-            
+
             try {
                 const loggedUser = await services.login({
                     user: this.form.user,
                     password: this.form.password
                 });
-    
+
                 auth.login(loggedUser);
-                window.location.href = "app.html";                
+                window.location.href = "/tasks/tasks.html";
             } catch (error) {
-                message.error(error);
+                loader.unblock();
+                messager.error(error);
             }
         }
     }

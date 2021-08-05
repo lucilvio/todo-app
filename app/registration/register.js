@@ -1,4 +1,4 @@
-import { message } from "./messages.js";
+import { messager } from "../messager/messager.js";
 import { services } from "./register.services.js";
 
 const loginData = {
@@ -8,7 +8,7 @@ const loginData = {
         }
     },
     methods: {
-        async submit(e) {            
+        async submit(e) {
             e.preventDefault();
 
             try {
@@ -17,11 +17,11 @@ const loginData = {
                     email: this.form.email,
                     password: this.form.password
                 });
-                
-                message.ok("User registered!", "Yey");            
-                window.location.href = "/login.html";
+
+                messager.ok("User registered!", "Yey");
+                window.location.href = "/login/login.html";
             } catch (error) {
-                message.error(error, "Oooops!");
+                messager.error(error, "Oooops!");
             }
         }
     }

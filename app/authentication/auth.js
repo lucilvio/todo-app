@@ -8,7 +8,7 @@ function verifyToken() {
     const userToken = JSON.parse(localStorage.getItem(key));
 
     if (!userToken || !userToken.expiresIn || userToken.expiresIn < now) {
-        window.location.href = "login.html";
+        window.location.href = "/login/login.html";
     }
 }
 
