@@ -22,9 +22,9 @@ jobs:
         with:
           files: './app/settings.json'
         env:
+          host: https://todo.lucilvio.com
           api: https://vue-todo-app-api.azurewebsites.net
-          signalR: https://vue-todo-app-api.azurewebsites.net
-          host: https://purple-mud-0fe5b3e03.azurestaticapps.net
+          signalR: https://vue-todo-app-api.azurewebsites.net/notify
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
