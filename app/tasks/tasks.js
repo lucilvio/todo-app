@@ -28,7 +28,7 @@ const appData = {
                     skipNegotiation: true,
                     transport: signalR.HttpTransportType.WebSockets
                 })
-                .configureLogging(signalR.LogLevel.Information)
+                .configureLogging(signalR.LogLevel.Trace)
                 .build();
 
             connection.on("tasksChanged", async() => {
