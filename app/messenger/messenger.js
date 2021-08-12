@@ -6,7 +6,7 @@ function error(message) {
     toastr.error(message, "OOooops!");
 }
 
-export const messager = {
+export const messenger = {
     ok: ok,
     error: error
 }

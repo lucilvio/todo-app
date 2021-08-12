@@ -16,7 +16,14 @@ namespace Vue.TodoApp
         internal LoggedUser GetLoggedUser()
         {
             var contextUser = this._httpContextAccessor.HttpContext.User;
+
+            if(contextUser is null)
+                throw new BusinessException("No user logged in");
+
             var id = contextUser.Claims.FirstOrDefault(c => c.Type == "id");
+
+            if(id is null || string.IsNullOrEmpty(id.Value))
+                throw new BusinessException("Can't identify logged user");
 
             return new LoggedUser(id.Value);
         }

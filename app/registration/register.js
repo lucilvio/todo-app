@@ -1,4 +1,4 @@
-import { messager } from "../messager/messager.js";
+import { messenger } from "../messenger/messenger.js";
 import { services } from "./register.services.js";
 
 const loginData = {
@@ -18,10 +18,10 @@ const loginData = {
                     password: this.form.password
                 });
 
-                messager.ok("User registered!", "Yey");
+                messenger.ok("User registered!", "Yey");
                 window.location.href = "/login/login.html";
             } catch (error) {
-                messager.error(error, "Oooops!");
+                messenger.error(error);
             }
         }
     }

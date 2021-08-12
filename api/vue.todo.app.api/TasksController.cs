@@ -12,13 +12,13 @@ namespace Vue.TodoApp
     {
         private readonly Auth _auth;
         private readonly TodoAppContext _context;
-        private readonly IHubContext<ChangesListenerHub> _changesListenerHub;
+        private readonly IHubContext<NotifyHub> _notifyHub;
 
-        public TasksController(TodoAppContext context, Auth auth, IHubContext<ChangesListenerHub> changesListenerHub)
+        public TasksController(TodoAppContext context, Auth auth, IHubContext<NotifyHub> notifyHub)
         {
             this._context = context;
             this._auth = auth;
-            this._changesListenerHub = changesListenerHub;
+            this._notifyHub = notifyHub;
         }
 
         [HttpGet]
@@ -44,6 +44,9 @@ namespace Vue.TodoApp
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] PostTaskRequest request)
         {
+            if(request is null)
+                throw new BusinessException("Error while trying to add task. Make sure you send all required data");
+
             var loggedUser = this._auth.GetLoggedUser();
             
             var foundUser = await this._context.Users
@@ -148,7 +151,7 @@ namespace Vue.TodoApp
         }
 
         private async Task SendTaskChangedEvent() =>
-            await this._changesListenerHub.Clients.All.SendAsync("tasksChanged");
+            await this._notifyHub.Clients.All.SendAsync("tasksChanged");
 
         public record PostTaskRequest(string Name, Guid? List);
     }

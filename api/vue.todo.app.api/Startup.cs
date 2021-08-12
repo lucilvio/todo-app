@@ -1,7 +1,6 @@
 using System;
-using System.Linq;
+using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -11,7 +10,6 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Vue.TodoApp
@@ -40,7 +38,7 @@ namespace Vue.TodoApp
                     builder.WithOrigins(appSettings.AllowedOrigin).AllowCredentials();                    
                     builder.WithOrigins(appSettings.AllowedOrigin).AllowAnyMethod();
                     builder.WithOrigins(appSettings.AllowedOrigin).AllowAnyHeader();
-                    builder.WithOrigins(appSettings.AllowedOrigin).SetPreflightMaxAge(TimeSpan.FromHours(12));
+                    builder.WithOrigins(appSettings.AllowedOrigin).SetPreflightMaxAge(TimeSpan.FromHours(24));
                 });
             });
 
@@ -63,7 +61,7 @@ namespace Vue.TodoApp
             services.AddAuthorization();
 
             services.AddHealthChecks()
-                .AddCheck<HealthChecker>("sample");
+                .AddCheck<HealthChecker>("health");
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -80,7 +78,9 @@ namespace Vue.TodoApp
                 options.UseSqlite("Data Source=todoapp.db");
             });
 
-            services.AddSignalR();
+            services.AddSignalR(options => {
+                options.EnableDetailedErrors = true;
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -92,10 +92,24 @@ namespace Vue.TodoApp
 
             app.UseAuthentication();
 
+            app.Use(async (context, next) => 
+            {
+                try
+                {
+                    await next();
+                }
+                catch (BusinessException ex)
+                {
+                    context.Response.ContentType = "application/json";
+                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    await context.Response.WriteAsJsonAsync(new { ErrorMessage = ex.Message });
+                }    
+            });
+
             app.UseEndpoints(config =>
             {
-                config.MapHub<ChangesListenerHub>("/change-listener");
                 config.MapControllers();
+                config.MapHub<NotifyHub>("/notify");
                 config.MapHealthChecks("/health", new HealthCheckOptions {
                     AllowCachingResponses = false
                 });

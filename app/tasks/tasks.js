@@ -1,7 +1,7 @@
 import { settings } from "../settings/settings.js";
 import { auth } from "../authentication/auth.js";
 import { services } from "./tasks.services.js";
-
+import { messenger } from "../messenger/messenger.js";
 
 const appData = {
     data() {
@@ -24,32 +24,28 @@ const appData = {
     methods: {
         async changesListener() {
             const connection = new signalR.HubConnectionBuilder()
-                .withUrl(settings.signalR + "/change-listener")
-                .configureLogging(signalR.LogLevel.Information)
+                .withUrl(settings.signalR)
+                .configureLogging(signalR.LogLevel.Trace)
                 .build();
 
+            connection.on("tasksChanged", async() => {
+                await this.loadTasks();
+            });
+
+            connection.on("listsChanged", async() => {
+                await this.loadLists();
+            });
+
             await connection.start();
-
-            connection.on("tasksChanged", () => {
-                this.loadTasks();
-            });
-
-            connection.on("listsChanged", () => {
-                this.loadLists();
-            });
         },
         async loadLists() {
-            this.lists = await services.loadLists();
+            this.lists = await this.callService(services.loadLists);
         },
         async removeList(id) {
-            await services.removeList(id);
-            this.setRoute("tasks");
+            await this.callService(services.removeList, { args: [id], successMessage: "List successfully removed" });
         },
         async loadTasks() {
-            const loadedTasks = await services.loadTasks();
-
-            if (loadedTasks)
-                this.tasks = loadedTasks;
+            this.tasks = await this.callService(services.loadTasks);
         },
         async addTask() {
             const task = {
@@ -57,23 +53,23 @@ const appData = {
                 list: this.selectedList ? this.selectedList.id : null
             };
 
-            await services.addTask(task);
+            await this.callService(services.addTask, { args: [task], successMessage: "Task added" });
             this.taskName = "";
         },
         async checkTask(taskId) {
-            await services.checkTask(taskId);
+            await this.callService(services.checkTask, { args: [taskId] });
         },
         async uncheckTask(taskId) {
-            await services.uncheckTask(taskId);
+            await this.callService(services.uncheckTask, { args: [taskId] });
         },
         async markTaskAsImportant(taskId) {
-            await services.markTaskAsImportant(taskId);
+            await this.callService(services.markTaskAsImportant, { args: [taskId] });
         },
         async markTaskAsNotImportant(taskId) {
-            await services.markTaskAsNotImportant(taskId);
+            await this.callService(services.markTaskAsNotImportant, { args: [taskId] });
         },
         async removeTask(taskId) {
-            await services.removeTask(taskId);
+            await this.callService(services.removeTask, { args: [taskId] });
         },
 
         async addList() {
@@ -84,7 +80,7 @@ const appData = {
                 Name: this.listName
             };
 
-            await services.addList(list);
+            await this.callService(services.addList, { args: [list] });
         },
         listTasksCounter(id) {
             return this.tasks.filter(t => t.list === id).length;
@@ -116,6 +112,21 @@ const appData = {
         logout() {
             auth.logout();
             location.reload();
+        },
+        async callService(service, config) {
+            try {
+                const args = config ? config.args : null;
+                const successMessage = config ? config.successMessage : "";
+
+                var result = await service.apply(this, args);
+
+                if (successMessage)
+                    messenger.ok(successMessage);
+
+                return result;
+            } catch (error) {
+                messenger.error(error.errorMessage);
+            }
         }
     },
     computed: {
@@ -137,9 +148,9 @@ const appData = {
 
         await this.loadLists();
         await this.loadTasks();
-        await this.changesListener();
-
         await this.setRoute("tasks");
+
+        await this.changesListener();
     }
 };
 

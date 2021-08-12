@@ -1,5 +1,5 @@
 import { auth } from "../authentication/auth.js"
-import { messager } from "../messager/messager.js";
+import { messenger } from "../messenger/messenger.js";
 import { loader } from "../loader/loader.js";
 
 import { services } from "./login.services.js";
@@ -29,7 +29,7 @@ const loginData = {
                 window.location.href = "/tasks/tasks.html";
             } catch (error) {
                 loader.unblock();
-                messager.error(error);
+                messenger.error(error);
             }
         }
     }

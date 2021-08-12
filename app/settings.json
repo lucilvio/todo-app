@@ -2,5 +2,7 @@
     "app": "TodoApp",
     "host": "http://localhost:8080",
     "api": "https://localhost:5001",
-    "signalR": "https://localhost:5001"
+    "signalR": "https://localhost:5001/notify",
+    "loginRoute": "/login/login.html",
+    "homeRoute": "/tasks/tasks.html"
 }

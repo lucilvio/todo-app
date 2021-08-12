@@ -13,13 +13,13 @@ namespace Vue.TodoApp
     {
         private readonly Auth _auth;
         private readonly TodoAppContext _context;
-        private readonly IHubContext<ChangesListenerHub> _changesListenerHub;
+        private readonly IHubContext<NotifyHub> _notifyHub;
 
-        public ListsController(TodoAppContext context, Auth auth, IHubContext<ChangesListenerHub> changesListenerHub)
+        public ListsController(TodoAppContext context, Auth auth, IHubContext<NotifyHub> notifyHub)
         {
             this._auth = auth;
             this._context = context;
-            this._changesListenerHub = changesListenerHub;
+            this._notifyHub = notifyHub;
         }
 
         [HttpGet]
@@ -73,7 +73,7 @@ namespace Vue.TodoApp
         }
 
         private async System.Threading.Tasks.Task SendListChangedEvent() =>
-            await this._changesListenerHub.Clients.All.SendAsync("listsChanged");
+            await this._notifyHub.Clients.All.SendAsync("listsChanged");
 
         public record PostListRequest(string Name);
     }

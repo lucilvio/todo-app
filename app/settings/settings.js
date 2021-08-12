@@ -1,4 +1,4 @@
-const cacheKey = "vue-todoapp-settings";
+const cacheKey = "todoapp-settings";
 
 function loadCachedSettings() {
     return localStorage.getItem(cacheKey);

@@ -4,12 +4,35 @@ import { loader } from "../loader/loader.js";
     const originFetch = window.fetch;
 
     window.fetch = function() {
-        loader.block();
+        if (!arguments[0].endsWith("/change-listener"))
+            loader.block();
 
         return originFetch.apply(this, arguments)
-            .then((res) => {
+            .then((response) => {
                 loader.unblock();
-                return res;
+
+                if (!response.ok) {
+                    if (response.status === 404)
+                        throw { errorMessage: "Service not found!" };
+                }
+
+                const contentType = response.headers.get('content-type');
+
+                if (!contentType || !contentType.includes('application/json'))
+                    return Promise.resolve();
+
+                return response.json();
+            }).then((jsonData) => {
+                if (!jsonData)
+                    return;
+
+                if (jsonData.errorMessage)
+                    throw data.errorMessage;
+
+                return jsonData;
+            }).catch((error) => {
+                loader.unblock();
+                throw error;
             });
     }
 })();

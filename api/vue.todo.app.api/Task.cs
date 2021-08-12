@@ -11,6 +11,9 @@ namespace Vue.TodoApp.Model
 
         public Task(string name, Guid userId, Guid? list = null) : this()
         {
+            if(string.IsNullOrEmpty(name))
+                throw new BusinessException("Can't create task without name");
+
             this.Name = name;
             this.UserId = userId;
             this.Done = false;
