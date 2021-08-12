@@ -24,8 +24,11 @@ const appData = {
     methods: {
         async changesListener() {
             const connection = new signalR.HubConnectionBuilder()
-                .withUrl(settings.signalR)
-                .configureLogging(signalR.LogLevel.Trace)
+                .withUrl(settings.signalR, {
+                    skipNegotiation: true,
+                    transport: signalR.HttpTransportType.WebSockets
+                })
+                .configureLogging(signalR.LogLevel.Information)
                 .build();
 
             connection.on("tasksChanged", async() => {
@@ -81,6 +84,7 @@ const appData = {
             };
 
             await this.callService(services.addList, { args: [list] });
+            this.listName = "";
         },
         listTasksCounter(id) {
             return this.tasks.filter(t => t.list === id).length;
