@@ -1,3 +1,79 @@
 body {
-    background-color: rgb(240, 240, 240);
+    color: rgb(68 68 68);
+    background-color: rgb(243 243 243);
+}
+
+.page-header .navbar {
+    float: right;
+}
+
+.logo-box a.logo-text {
+    color: rgb(68 68 68);
+    text-decoration: none;
+}
+
+.accordion-menu {
+    margin-top: 10px;
+}
+
+.accordion-menu input {
+    border: none;
+}
+
+.accordion-menu>li {
+    margin: 0px;
+    border-bottom: 1px black;
+}
+
+.accordion-menu>li>a {
+    color: rgb(68 68 68);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-decoration: none;
+}
+
+.accordion-menu>li>a:hover {
+    color: rgb(68 68 68);
+    font-weight: 700;
+    background-color: rgb(245, 245, 245);
+}
+
+.accordion-menu li.selected>a:only-child {
+    color: rgb(68 68 68);
+    font-weight: 900;
+    background: rgb(245, 245, 245);
+    background-color: rgb(245, 245, 245);
+}
+
+.accordion-menu>li>a>i {
+    font-size: 13px;
+    font-style: normal;
+}
+
+.accordion-menu li a i.has-sub-menu {
+    font-family: Lato, sans-serif;
+}
+
+.page-content {
+    padding: 0px 50px;
+}
+
+.page-content .page-info {
+    margin-top: 40px;
+}
+
+.page-content .page-info h3 {
+    margin-left: -10px;
+    margin-bottom: 0px;
+}
+
+.page-content .page-info h5 {
+    margin-left: 8px;
+    margin-bottom: 0px;
+    font-size: 11px;
+    color: rgb(180, 180, 180);
+}
+
+.page-footer {
+    padding: 25px 55px 35px;
 }

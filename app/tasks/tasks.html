@@ -9,104 +9,178 @@
 
     <script type="module" src="../authentication/auth.js"></script>
 
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
+    <link href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" rel="stylesheet" crossorigin="anonymous" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" rel="stylesheet" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
-    <link href="../loader/loader.css" rel="stylesheet" />
-    <link href="../site.css" rel="stylesheet" />
-    <link href="tasks.css" rel="stylesheet" />
+    <link href="/connect.min.css" rel="stylesheet">
+    <link href="/loader/loader.css" rel="stylesheet" />
+    <link href="/site.css" rel="stylesheet" />
 </head>
 
 <body>
     <div class="loader"></div>
-    <div id="app" class="container-fluid ">
-        <div class="row mx-5 mt-4 gx-5">
-            <div class="col-3">
-                <div class="row p-3 shadow-sm bg-body rounded">
-                    <p><span class="text-muted mb-4"> Todo App </span></p>
-                    <p><i class="fa fa-user me-3"></i><b class="text-primary">{{ user.name }}</b><span v-on:click="logout" class="pull-right logout"><i class="fa fa-sign-out"></i></span></p>
-                    <ul class="menu">
-                        <li v-bind:class="{'selected': selectedRoute.name === 'importantTasks' }" v-on:click="setRoute('importantTasks')">
-                            <span><i class="fas fa-bookmark me-3"></i>Important</span>
-                            <span v-if="importantTasksCounter > 0" class="taks-counter">{{ importantTasksCounter
-                                }}</span>
-                        </li>
+    <div id="app" class="connect-container align-content-stretch d-flex flex-wrap">
+        <div class="page-sidebar">
+            <div class="logo-box"><a href="tasks.html" class="logo-text">Todo App</a>
+                <a href="#" id="sidebar-close"><i class="material-icons">close</i></a>
+            </div>
+            <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 250px;">
+                <div class="page-sidebar-inner slimscroll" style="overflow: hidden; width: auto; height: 250px;">
+                    <ul class="accordion-menu">
                         <li v-bind:class="{'selected': selectedRoute.name === 'tasks' }" v-on:click="setRoute('tasks')">
-                            <span><i class="far fa-clipboard-list-check me-3"></i>Tasks</span>
-                            <span v-if="tasksCounter > 0" class="taks-counter">{{ tasksCounter }}</span>
+                            <a href="#">
+                                <span><i class="far fa-clipboard-list-check me-3"></i> Tasks</span>
+                                <i v-if="tasksCounter > 0" class="has-sub-menu">{{ tasksCounter }}</i>
+                            </a>
                         </li>
-                        <hr>
-                        <li class="mb-2 cursor-pointer" v-bind:class="{'selected': selectedRoute.title === list.name }" v-for="list in lists" v-on:click="setRoute('list', list)">
-                            <span><i class="far fa-bars me-3"></i>{{ list.name }}</span>&nbsp;
-                            <span v-if="listTasksCounter(list.id) > 0" class="taks-counter">{{ listTasksCounter(list.id)
-                                }}</span>
-                            <span v-on:click="removeList(list.id)"><i class="far fa-trash-alt remove-list"></i></span>
+                        <li v-bind:class="{'selected': selectedRoute.name === 'importantTasks' }" v-on:click="setRoute('importantTasks')">
+                            <a href="#">
+                                <span><i class="fas fa-bookmark me-3"></i> Important</span>
+                                <i v-if="importantTasksCounter > 0" class="has-sub-menu">{{ importantTasksCounter }}</i>
+                            </a>
+                        </li>
+                        <li v-bind:class="{'selected': selectedRoute.name === 'completedTasks' }" v-on:click="setRoute('completedTasks')">
+                            <a href="#">
+                                <span><i class="fas fa-check me-3"></i>Completed</span>
+                                <i v-if="completedTasksCounter > 0" class="has-sub-menu">{{ completedTasksCounter }}</i>
+                            </a>
+                        </li>
+                        <li v-bind:class="{'selected': selectedRoute.name === 'deletedTasks' }" v-on:click="setRoute('deletedTasks')">
+                            <a href="#">
+                                <span><i class="fas fa-trash me-3"></i>Deleted</span>
+                                <i v-if="deletedTasksCounter > 0" class="has-sub-menu">{{ deletedTasksCounter }}</i>
+                            </a>
+                        </li>
 
+                        <li class="sidebar-title">
+                            Lists
+                        </li>
+
+                        <li v-bind:class="{'selected': selectedRoute.title === list.name }" v-for="list in lists" v-on:click="setRoute('list', list)">
+                            <a href="#">
+                                <span><i class="far fa-bars me-3"></i>{{ list.name }}</span>
+                                <i v-if="listTasksCounter(list.id) > 0" class="has-sub-menu">{{
+                                    listTasksCounter(list.id) }}</i>
+                            </a>
                         </li>
                         <li class="new-list" v-on:click="newList">
-                            <span><i class="fal fa-plus me-3 text-primary"></i><input v-model="listName"
-                                    v-on:blur="addList" placeholder="New Task List"></span>
+                            <a href="#">
+                                <span><i class="fal fa-plus me-3 text-primary"></i><input v-model="listName"
+                                        v-on:blur="addList" placeholder="New Task List"></span>
+                            </a>
                         </li>
                     </ul>
                 </div>
-            </div>
-            <div class="col-9">
-                <h1><i v-bind:class="selectedRoute.icon" class="me-3 mb-3"></i>{{ selectedRoute.title }}</h1>
-
-                <div class="row shadow-sm bg-body p-3 rounded">
-                    <div class="col-7 col-sm-8 col-md-9 col-lg-10">
-                        <input class="form-control" v-model="taskName" placeholder="Task Name" />
-                    </div>
-                    <div class="col-5 col-sm-4 col-md-3 col-lg-2">
-                        <button class="btn btn-primary" v-on:click="addTask">Add Task</button>
-                    </div>
+                <div class="slimScrollBar" style="background: rgb(204, 204, 204); width: 6px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 0px; z-index: 99; right: 0px; height: 125.231px;">
                 </div>
-                <div class="row row shadow-sm bg-body p-3 mt-3 rounded">
-                    <div class="col" v-if="filteredTasks.length > 0">
-                        <div class="row my-2" v-for="task in filteredTasks">
-                            <div class="col-1">
-                                <div class="form-check">
-                                    <input class="form-check-input" v-if="task.done" type="checkbox" v-model="task.done" v-on:click="uncheckTask(task.id)">
-                                    <input class="form-check-input" v-else-if="!task.done" type="checkbox" v-model="task.done" v-on:click="checkTask(task.id)">
+                <div class="slimScrollRail" style="width: 6px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 0px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 0px;">
+                </div>
+            </div>
+        </div>
+        <div class="page-container">
+            <div class="page-header">
+                <nav class="navbar navbar-expand">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <ul class="navbar-nav">
+                        <li class="nav-item small-screens-sidebar-link">
+                            <a href="#" class="nav-link"><i class="material-icons-outlined">menu</i></a>
+                        </li>
+
+                        <li class="nav-item nav-profile dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="../images/avatar.png" alt="profile image">
+                                <span>{{ user.name }}</span><i class="material-icons dropdown-icon">keyboard_arrow_down</i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="#">Log out</a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="page-content">
+                <div class="page-info">
+                    <h3><i class="me-3 mb-3"></i>{{ selectedRoute.title }}</h3>
+                    <h5 class="mt-1"> {{ selectedRoute.subtitle }} </h5>
+                </div>
+                <div class="main-wrapper">
+                    <div class="row" v-if="canAddNewTask">
+                        <div class="col-lg-12">
+                            <div class="card">
+
+                                <div class="card-body">
+                                    <div class="col-7 col-sm-8 col-md-6 col-lg-5">
+                                        <input class="form-control" v-model="taskName" placeholder="Task Name" />
+                                    </div>
+                                    <div class="col-3 col-sm-4 col-md-3 col-lg-2">
+                                        <button class="btn btn-primary" v-on:click="addTask">Add Task</button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-9">
-                                <span v-bind:class="{'done-task': task.done}"> {{ task.name }} </span>
-                            </div>
-                            <div class="col-1">
-                                <span class="important-flag" v-if="task.important" v-on:click="markTaskAsNotImportant(task.id)"><i class="fas fa-bookmark"></i></span>
-                                <span class="important-flag" v-else v-on:click="markTaskAsImportant(task.id)"><i
-                                        class="far fa-bookmark"></i></span>
-                            </div>
-                            <div class="col-1">
-                                <span v-on:click="removeTask(task.id)"><i
-                                        class="far fa-trash-alt remove-task"></i></span>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <span class=" text-center text-muted small"> Tasks {{ tasks.filter(t => t.done).length}} /
-                                <span class="fw-bold"> {{ tasks.length }} </span> </span>
                         </div>
                     </div>
-                    <div class="col-12" v-else class="text-center">
-                        <span class="text-muted">What are you waiting for? Add your first task.</span>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-body" v-if=" filteredTasks.length > 0">
+                                    <div class="col">
+                                        <div class=" row my-2 " v-for="task in filteredTasks ">
+                                            <div class="col-1 ">
+                                                <div class="form-check ">
+                                                    <input class="form-check-input " v-if="task.done " type="checkbox " v-model="task.done " v-on:click="uncheckTask(task.id) ">
+                                                    <input class="form-check-input " v-else-if="!task.done " type="checkbox " v-model="task.done " v-on:click="checkTask(task.id) ">
+                                                </div>
+                                            </div>
+                                            <div class="col-9 ">
+                                                <span v-bind:class="{ 'done-task': task.done} "> {{ task.name }}
+                                                </span>
+                                            </div>
+                                            <div class="col-1" v-if="task.canBeMarkedAsImportant">
+                                                <span class="important-flag " v-if="task.important " v-on:click="markTaskAsNotImportant(task.id) "><i
+                                                        class="fas fa-bookmark "></i></span>
+                                                <span class="important-flag " v-else v-on:click="markTaskAsImportant(task.id) "><i
+                                                        class="far fa-bookmark "></i></span>
+                                            </div>
+                                            <div class="col-1 " v-if="task.canBeDeleted">
+                                                <span v-on:click="removeTask(task.id) "><i
+                                                        class="far fa-trash-alt remove-task "></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body " v-else class="text-center ">
+                                    <span class="text-muted ">What are you waiting for? Add your first task.</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div class="page-footer">
                 <div class="row">
-                    <div class="col text-center mt-2">
-                        <span class="copyright"> Copyright Lucilvio Lima </span>
+                    <div class="col-md-12">
+                        <span class="text-muted small">2021 © Lucilvio Lima</span>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.1.0/uuidv4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@3.1.2/dist/vue.global.prod.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.9/signalr.min.js"></script>
+    <script src="../popper.min.js"></script>
+    <script src="../jquery.slimscroll.min.js"></script>
+    <script src="../connect.min.js"></script>
     <script type="module" src="../fetch-interceptor/fetch-interceptor.js"></script>
     <script type="module" src="tasks.services.js"></script>
     <script type="module" src="tasks.js"></script>

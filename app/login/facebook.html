@@ -25,7 +25,7 @@
 <body>
     <div class="loader"></div>
 
-    <div id="login" class="container-fluid">
+    <div class="container-fluid">
         <div class="row align-items-center min-vh-100">
             <div class="col-1 col-md-4"></div>
             <div class="col-10 col-md-4">
@@ -36,18 +36,7 @@
                 </div>
                 <div class="row shadow-sm bg-body rounded p-5">
                     <div class="col-12">
-                        <form v-on:submit="submit">
-                            <p class="mb-3 text-muted"> Infrom your access info </p>
-                            <input type="email" v-model="form.user" class="form-control mb-2" placeholder="Your Email" required />
-                            <input type="password" v-model="form.password" class="form-control mb-2" placeholder="Your Password" required />
-
-                            <button type="submit" class="btn btn-primary mt-1">Login</button>
-                        </form>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-12 text-center text-muted">
-                        <p> Not registered yet? <a href="../registration/register.html">Click Here</a></p>
+                        <p class="mb-3 text-muted"> FACEBOOK </p>
                     </div>
                 </div>
             </div>
@@ -57,8 +46,6 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@3.1.2/dist/vue.global.prod.js"></script>
-    <script type="module" src="./login.js"></script>
 </body>
 
 </html>

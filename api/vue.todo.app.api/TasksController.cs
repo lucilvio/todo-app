@@ -37,7 +37,11 @@ namespace Vue.TodoApp
                 name = t.Name,
                 done = t.Done,
                 important = t.Important,
-                list = t.ListId
+                deleted = t.Deleted,
+                list = t.ListId,
+                t.CanBeDeleted,
+                t.CanBeMarkedAsDone,
+                t.CanBeMarkedAsImportant
             }));
         }
 
@@ -74,7 +78,8 @@ namespace Vue.TodoApp
             if (foundTask is null)
                 return NotFound("Task not found");
 
-            this._context.Remove(foundTask);
+            foundTask.Delete();
+
             await _context.SaveChangesAsync();
 
             await this.SendTaskChangedEvent();

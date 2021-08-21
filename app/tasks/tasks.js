@@ -13,9 +13,11 @@ const appData = {
             taskName: "",
             listName: "",
             routes: [
-                { icon: "far fa-clipboard-list-check", title: "Tasks", name: "tasks", action: this.goToTasks },
-                { icon: "fas fa-bookmark", title: "Important Tasks", name: "importantTasks", action: this.goToImportantTasks },
-                { icon: "fa fa-list", title: "List", name: "list", action: this.goToList }
+                { name: "tasks", title: "Tasks", subtitle: "List of your ongoing tasks", action: this.goToTasks },
+                { name: "importantTasks", title: "Important Tasks", subtitle: "List of your important tasks", action: this.goToImportantTasks },
+                { name: "completedTasks", title: "Completed Tasks", subtitle: "All your completed tasks", action: this.goToCompletedTasks },
+                { name: "deletedTasks", title: "Deleted Tasks", subtitle: "List of your deleted tasks", action: this.goToDeletedTasks },
+                { name: "list", title: "List", subtitle: "List of your ongoing tasks in this list", action: this.goToList }
             ],
             selectedRoute: {},
             selectedList: { id: null, name: "" }
@@ -102,11 +104,19 @@ const appData = {
         },
         goToTasks() {
             this.selectedList = { id: null, name: "" };
-            this.filteredTasks = this.tasks.filter(t => !t.list)
+            this.filteredTasks = this.tasks.filter(t => !t.list && !t.deleted && !t.done)
         },
         goToImportantTasks() {
             this.selectedList = { id: null, name: "" };
             this.filteredTasks = this.tasks.filter(t => t.important);
+        },
+        goToCompletedTasks() {
+            this.selectedList = { id: null, name: "" };
+            this.filteredTasks = this.tasks.filter(t => t.done);
+        },
+        goToDeletedTasks() {
+            this.selectedList = { id: null, name: "" };
+            this.filteredTasks = this.tasks.filter(t => t.deleted);
         },
         goToList(list) {
             this.selectedRoute.title = list.name;
@@ -135,10 +145,19 @@ const appData = {
     },
     computed: {
         tasksCounter: function() {
-            return this.tasks.filter(t => !t.list).length;
+            return this.tasks.filter(t => !t.list && !t.deleted && !t.done).length;
         },
         importantTasksCounter: function() {
             return this.tasks.filter(t => t.important).length;
+        },
+        completedTasksCounter: function() {
+            return this.tasks.filter(t => t.done).length;
+        },
+        deletedTasksCounter: function() {
+            return this.tasks.filter(t => t.deleted).length;
+        },
+        canAddNewTask: function() {
+            return this.selectedRoute.name == "tasks" || this.selectedRoute.name == "importantTasks" || this.selectedRoute.name == "list";
         }
     },
     watch: {
