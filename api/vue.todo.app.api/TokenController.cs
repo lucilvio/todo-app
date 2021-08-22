@@ -92,6 +92,8 @@ namespace Vue.TodoApp
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", authCodeChangeResponse.access_token);
                 var userInfo = await httpClient.GetFromJsonAsync<UserInfoResponse>($"https://graph.facebook.com/v11.0/me?fields=name, email");
 
+                return Ok(new { userInfo });
+
                 var foundUser = await this._context.Users
                     .AsNoTracking()
                     .FirstOrDefaultAsync(u => u.Email == userInfo.email);
