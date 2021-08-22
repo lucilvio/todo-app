@@ -38,6 +38,8 @@ namespace Vue.TodoApp
                 config.AddApplicationInsights();
             });
 
+            services.AddApplicationInsightsTelemetry();
+
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
