@@ -104,15 +104,15 @@ namespace Vue.TodoApp
             }
             catch (NotSupportedException ex)
             {
-                return BadRequest(new { ErrorMessage = $"Can't validate Facebook Authorization Code. { ex.Message }" });
+                return BadRequest(new { ErrorMessage = $"Method not suportted. { ex.Message }" });
             }
             catch (JsonException ex)
             {
-                return BadRequest(new { ErrorMessage = $"Can't validate Facebook Authorization Code. { ex.Message }" });
+                return BadRequest(new { ErrorMessage = $"Can't parser Facebook json response. { ex.Message }" });
             }
             catch (TokenGenerationException ex)
             {
-                return BadRequest(new { ErrorMessage = $"Can't validate Facebook Authorization Code. { ex.Message }" });
+                return BadRequest(new { ErrorMessage = ex.Message });
             }
         }
 
