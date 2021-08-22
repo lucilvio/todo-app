@@ -72,8 +72,16 @@ namespace Vue.TodoApp
             {
                 System.Console.WriteLine("FACEBOOK CODE: " + request.Code);
                 var httpClient = httpClientsFactory.CreateClient("FacebookClient");
+                
+                System.Console.WriteLine("https://graph.facebook.com/v11.0/oauth/access_token?client_id={this._appSettings.Facebook.ClientId}&redirect_uri={this._appSettings.Facebook.RedirectUrl}&client_secret={this._appSettings.Facebook.ClientSecret}&code={request.Code}");
+
                 var authCodeChangeResponse = await httpClient.GetFromJsonAsync<AuthCodeChangeResponse>($"https://graph.facebook.com/v11.0/oauth/access_token?client_id={this._appSettings.Facebook.ClientId}&redirect_uri={this._appSettings.Facebook.RedirectUrl}&client_secret={this._appSettings.Facebook.ClientSecret}&code={request.Code}");
+
+                System.Console.WriteLine($"https://graph.facebook.com/debug_token?input_token={authCodeChangeResponse.access_token}&access_token={this._appSettings.Facebook.ClientToken}");
+
                 var inspectAccessToken = await httpClient.GetFromJsonAsync<InspectAccessTokenResponse>($"https://graph.facebook.com/debug_token?input_token={authCodeChangeResponse.access_token}&access_token={this._appSettings.Facebook.ClientToken}");
+
+                System.Console.WriteLine($"https://graph.facebook.com/debug_token?input_token={authCodeChangeResponse.access_token}&access_token={this._appSettings.Facebook.ClientToken}");
 
                 if (!inspectAccessToken.is_valid)
                     return BadRequest(new { ErrorMessage = "Can't validate Facebook Authorization Code" });
