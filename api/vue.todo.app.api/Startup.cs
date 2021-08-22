@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Logging;
 
 namespace Vue.TodoApp
 {
@@ -30,12 +31,18 @@ namespace Vue.TodoApp
 
             appSettingsSection.Bind(appSettings);
             services.Configure<AppSettings>(appSettingsSection);
-            
+
+            services.AddLogging(config =>
+            {
+                config.ClearProviders();
+                config.AddApplicationInsights("e9bde389-42d3-4146-b673-8edd0bce8177");
+            });
+
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins(appSettings.AllowedOrigin).AllowCredentials();                    
+                    builder.WithOrigins(appSettings.AllowedOrigin).AllowCredentials();
                     builder.WithOrigins(appSettings.AllowedOrigin).AllowAnyMethod();
                     builder.WithOrigins(appSettings.AllowedOrigin).AllowAnyHeader();
                     builder.WithOrigins(appSettings.AllowedOrigin).SetPreflightMaxAge(TimeSpan.FromHours(24));
@@ -80,7 +87,8 @@ namespace Vue.TodoApp
 
             services.AddHttpClient();
 
-            services.AddSignalR(options => {
+            services.AddSignalR(options =>
+            {
                 options.EnableDetailedErrors = true;
             });
         }
@@ -89,12 +97,12 @@ namespace Vue.TodoApp
         {
             app.UseCors();
             app.UseHttpsRedirection();
-            
+
             app.UseRouting();
 
             app.UseAuthentication();
 
-            app.Use(async (context, next) => 
+            app.Use(async (context, next) =>
             {
                 try
                 {
@@ -105,14 +113,15 @@ namespace Vue.TodoApp
                     context.Response.ContentType = "application/json";
                     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                     await context.Response.WriteAsJsonAsync(new { ErrorMessage = ex.Message });
-                }    
+                }
             });
 
             app.UseEndpoints(config =>
             {
                 config.MapControllers();
                 config.MapHub<NotifyHub>("/notify");
-                config.MapHealthChecks("/health", new HealthCheckOptions {
+                config.MapHealthChecks("/health", new HealthCheckOptions
+                {
                     AllowCachingResponses = false
                 });
             });

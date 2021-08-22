@@ -73,26 +73,21 @@ namespace Vue.TodoApp
 
             try
             {
-                this.logger.LogError("FACEBOOK CODE: " + request.Code);
+                this.logger.LogInformation("FACEBOOK CODE: " + request.Code);
                 var httpClient = httpClientsFactory.CreateClient("FacebookClient");
                 
-                this.logger.LogError($"Validate Code: https://graph.facebook.com/v11.0/oauth/access_token?client_id={this._appSettings.Facebook.ClientId}&redirect_uri={this._appSettings.Facebook.RedirectUrl}&client_secret={this._appSettings.Facebook.ClientSecret}&code={request.Code}");
-
                 var authCodeChangeResponse = await httpClient.GetFromJsonAsync<AuthCodeChangeResponse>($"https://graph.facebook.com/v11.0/oauth/access_token?client_id={this._appSettings.Facebook.ClientId}&redirect_uri={this._appSettings.Facebook.RedirectUrl}&client_secret={this._appSettings.Facebook.ClientSecret}&code={request.Code}");
-
-                this.logger.LogError($"Get Acces Token: https://graph.facebook.com/debug_token?input_token={authCodeChangeResponse.access_token}&access_token={this._appSettings.Facebook.ClientToken}");
+                this.logger.LogInformation("FacebookAccessToken: {AccessToken}", authCodeChangeResponse.access_token);
 
                 var inspectAccessToken = await httpClient.GetFromJsonAsync<InspectAccessTokenResponse>($"https://graph.facebook.com/debug_token?input_token={authCodeChangeResponse.access_token}&access_token={this._appSettings.Facebook.ClientToken}");
-
-                this.logger.LogError($"Inspect Access Token: https://graph.facebook.com/debug_token?input_token={authCodeChangeResponse.access_token}&access_token={this._appSettings.Facebook.ClientToken}");
+                this.logger.LogInformation("Facebook Inspect repose: {inspectResponse}", JsonSerializer.Serialize(inspectAccessToken));
 
                 if (!inspectAccessToken.is_valid)
-                    return BadRequest(new { ErrorMessage = "Can't validate Facebook Authorization Code" });
+                    return BadRequest(new { ErrorMessage = "AccessToken is not valid." });
 
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", authCodeChangeResponse.access_token);
                 var userInfo = await httpClient.GetFromJsonAsync<UserInfoResponse>($"https://graph.facebook.com/v11.0/me?fields=name, email");
-
-                return Ok(new { userInfo });
+                this.logger.LogInformation("Facebook UserInfo: {userInfo}", JsonSerializer.Serialize(userInfo));
 
                 var foundUser = await this._context.Users
                     .AsNoTracking()
@@ -132,7 +127,11 @@ namespace Vue.TodoApp
         public record TokenPostRequest(string User, string Password);
         public record FacebookTokenPostRequest(string Code);
         public record AuthCodeChangeResponse(string access_token);
-        public record InspectAccessTokenResponse(bool is_valid, string user_id);
+        public record InspectAccessTokenResponse(bool is_valid, string user_id) 
+        {
+            public InspectAccessTokenData data { get; set; }
+            public record InspectAccessTokenData(bool is_valid, string user_id);
+        }
         public record UserInfoResponse(string name, string email);
     }
 }

@@ -14,6 +14,9 @@ import { loader } from "../loader/loader.js";
                 if (!response.ok) {
                     if (response.status === 404)
                         throw { errorMessage: "Service not found!" };
+
+                    if (response.status === 500)
+                        throw { errorMessage: "Internal Server Error!" };
                 }
 
                 const contentType = response.headers.get('content-type');
