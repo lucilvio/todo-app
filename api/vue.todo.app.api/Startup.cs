@@ -32,13 +32,14 @@ namespace Vue.TodoApp
             appSettingsSection.Bind(appSettings);
             services.Configure<AppSettings>(appSettingsSection);
 
+            services.AddApplicationInsightsTelemetry();
+            
             services.AddLogging(config =>
             {
                 config.ClearProviders();
                 config.AddApplicationInsights();
             });
 
-            services.AddApplicationInsightsTelemetry();
 
             services.AddCors(options =>
             {
