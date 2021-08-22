@@ -82,7 +82,7 @@ namespace Vue.TodoApp
                 var inspectAccessToken = await httpClient.GetFromJsonAsync<InspectAccessTokenResponse>($"https://graph.facebook.com/debug_token?input_token={authCodeChangeResponse.access_token}&access_token={this._appSettings.Facebook.ClientToken}");
                 this.logger.LogInformation("Facebook Inspect repose: {inspectResponse}", JsonSerializer.Serialize(inspectAccessToken));
 
-                if (!inspectAccessToken.is_valid)
+                if (!inspectAccessToken.IsValid)
                     return BadRequest(new { ErrorMessage = "AccessToken is not valid." });
 
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", authCodeChangeResponse.access_token);
@@ -127,9 +127,11 @@ namespace Vue.TodoApp
         public record TokenPostRequest(string User, string Password);
         public record FacebookTokenPostRequest(string Code);
         public record AuthCodeChangeResponse(string access_token);
-        public record InspectAccessTokenResponse(bool is_valid, string user_id) 
+        public record InspectAccessTokenResponse() 
         {
             public InspectAccessTokenData data { get; set; }
+            public bool IsValid => data is not null && data.is_valid;
+
             public record InspectAccessTokenData(bool is_valid, string user_id);
         }
         public record UserInfoResponse(string name, string email);
