@@ -27,7 +27,7 @@ import { loader } from "../loader/loader.js";
                     return;
 
                 if (jsonData.errorMessage)
-                    throw data.errorMessage;
+                    throw jsonData.errorMessage;
 
                 return jsonData;
             }).catch((error) => {

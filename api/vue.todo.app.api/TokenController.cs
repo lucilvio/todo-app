@@ -37,7 +37,7 @@ namespace Vue.TodoApp
                 .FirstOrDefaultAsync(u => u.Email == request.User && u.Password == request.Password);
 
             if (foundUser is null)
-                return BadRequest(new { message = "Invalid user os password" });
+                return BadRequest(new { ErrorMessage = "Invalid user os password" });
 
             try
             {
@@ -53,7 +53,7 @@ namespace Vue.TodoApp
             }
             catch (TokenGenerationException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { ErrorMessage = ex.Message });
             }
         }
 
@@ -65,14 +65,18 @@ namespace Vue.TodoApp
             var issuer = base.Request.Headers["iss"];
             var audience = base.Request.Headers["aud"];
 
+            if(request is null || string.IsNullOrEmpty(request.Code))
+                return BadRequest(new { ErrorMessage = "Invalid request or Facebook code" });
+
             try
             {
+                System.Console.WriteLine("FACEBOOK CODE: " + request.Code);
                 var httpClient = httpClientsFactory.CreateClient("FacebookClient");
                 var authCodeChangeResponse = await httpClient.GetFromJsonAsync<AuthCodeChangeResponse>($"https://graph.facebook.com/v11.0/oauth/access_token?client_id={this._appSettings.Facebook.ClientId}&redirect_uri={this._appSettings.Facebook.RedirectUrl}&client_secret={this._appSettings.Facebook.ClientSecret}&code={request.Code}");
                 var inspectAccessToken = await httpClient.GetFromJsonAsync<InspectAccessTokenResponse>($"https://graph.facebook.com/debug_token?input_token={authCodeChangeResponse.access_token}&access_token={this._appSettings.Facebook.ClientToken}");
 
                 if (!inspectAccessToken.is_valid)
-                    return BadRequest("Can't validate Facebook Authorization Code");
+                    return BadRequest(new { ErrorMessage = "Can't validate Facebook Authorization Code" });
 
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", authCodeChangeResponse.access_token);
                 var userInfo = await httpClient.GetFromJsonAsync<UserInfoResponse>($"https://graph.facebook.com/v11.0/me?fields=name, email");
@@ -82,7 +86,7 @@ namespace Vue.TodoApp
                     .FirstOrDefaultAsync(u => u.Email == userInfo.email);
 
                 if (foundUser is null)
-                    return BadRequest(new { message = "Invalid user os password" });
+                    return BadRequest(new { ErrorMessage = "Invalid user os password" });
 
                 var generatedToken = _tokenGenerator.Generate(foundUser, issuer, audience);
 
@@ -96,19 +100,19 @@ namespace Vue.TodoApp
             }
             catch (HttpRequestException ex)
             {
-                return BadRequest(new { message = $"Can't validate Facebook Authorization Code. { ex.Message }" });
+                return BadRequest(new { ErrorMessage = $"Can't validate Facebook Authorization Code. { ex.Message }" });
             }
             catch (NotSupportedException ex)
             {
-                return BadRequest(new { message = $"Can't validate Facebook Authorization Code. { ex.Message }" });
+                return BadRequest(new { ErrorMessage = $"Can't validate Facebook Authorization Code. { ex.Message }" });
             }
             catch (JsonException ex)
             {
-                return BadRequest(new { message = $"Can't validate Facebook Authorization Code. { ex.Message }" });
+                return BadRequest(new { ErrorMessage = $"Can't validate Facebook Authorization Code. { ex.Message }" });
             }
             catch (TokenGenerationException ex)
             {
-                return BadRequest(new { message = $"Can't validate Facebook Authorization Code. { ex.Message }" });
+                return BadRequest(new { ErrorMessage = $"Can't validate Facebook Authorization Code. { ex.Message }" });
             }
         }
 
