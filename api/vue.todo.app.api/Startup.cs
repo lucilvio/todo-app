@@ -78,6 +78,8 @@ namespace Vue.TodoApp
                 options.UseSqlite("Data Source=todoapp.db");
             });
 
+            services.AddHttpClient();
+
             services.AddSignalR(options => {
                 options.EnableDetailedErrors = true;
             });

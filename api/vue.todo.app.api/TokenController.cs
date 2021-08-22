@@ -58,6 +58,7 @@ namespace Vue.TodoApp
         }
 
         [HttpPost]
+        [Route("facebook")]
         [AllowAnonymous]
         public async Task<IActionResult> Facebook([FromServices] IHttpClientFactory httpClientsFactory, [FromBody] FacebookTokenPostRequest request)
         {
@@ -93,21 +94,21 @@ namespace Vue.TodoApp
                     token = generatedToken.Token
                 });
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
-                return BadRequest("Can't validate Facebook Authorization Code");
+                return BadRequest(new { message = $"Can't validate Facebook Authorization Code. { ex.Message }" });
             }
-            catch (NotSupportedException)
+            catch (NotSupportedException ex)
             {
-                return BadRequest("Can't validate Facebook Authorization Code");
+                return BadRequest(new { message = $"Can't validate Facebook Authorization Code. { ex.Message }" });
             }
-            catch (JsonException)
+            catch (JsonException ex)
             {
-                return BadRequest("Can't validate Facebook Authorization Code");
+                return BadRequest(new { message = $"Can't validate Facebook Authorization Code. { ex.Message }" });
             }
             catch (TokenGenerationException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { message = $"Can't validate Facebook Authorization Code. { ex.Message }" });
             }
         }
 

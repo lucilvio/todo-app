@@ -4,12 +4,13 @@ import { loader } from "../loader/loader.js";
 import { services } from "./facebook.services.js";
 
 try {
-    const queryString = windows.location.search;
+    loader.block();
+
+    const queryString = window.location.search;
     const code = new URLSearchParams(queryString).get("code");
 
     if (!code) {
         window.location.href = "/login/login.html";
-        return;
     }
 
     const params = await services.login({
@@ -19,6 +20,6 @@ try {
     auth.login(params);
     window.location.href = "/tasks/tasks.html";
 } catch (error) {
-    loader.unblock();
-    messenger.error(error);
+    console.log(error);
+    // window.location.href = "/login/login.html";
 }

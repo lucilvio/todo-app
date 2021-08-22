@@ -1,7 +1,7 @@
 import { settings } from "../settings/settings.js";
 
 async function login(code) {
-    const reponse = await fetch(settings.api + "/facebook/token", {
+    const reponse = await fetch(settings.api + "/token/facebook", {
         method: "POST",
         credentials: "omit",
         body: JSON.stringify(code),
