@@ -35,7 +35,7 @@ namespace Vue.TodoApp
             services.AddLogging(config =>
             {
                 config.ClearProviders();
-                config.AddApplicationInsights("e9bde389-42d3-4146-b673-8edd0bce8177");
+                config.AddApplicationInsights();
             });
 
             services.AddCors(options =>
