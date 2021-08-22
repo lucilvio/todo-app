@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -89,8 +90,8 @@ namespace Vue.TodoApp
                 if (!inspectAccessToken.IsValid)
                     return BadRequest(new { ErrorMessage = "AccessToken is not valid." });
 
-                facebookUrl = $"https://graph.facebook.com/v11.0/me?fields=name, email";
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", authCodeChangeResponse.access_token);
+                facebookUrl = $"https://graph.facebook.com/v11.0/me?fields=name,email";
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {authCodeChangeResponse.access_token}");
                 var userInfo = await httpClient.GetFromJsonAsync<UserInfoResponse>(facebookUrl);
                 this.logger.LogInformation("Facebook UserInfo: {userInfo}", JsonSerializer.Serialize(userInfo));
 
