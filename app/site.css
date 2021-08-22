@@ -3,6 +3,10 @@ body {
     background-color: rgb(243 243 243);
 }
 
+.form-control {
+    border-radius: 10px;
+}
+
 .page-header .navbar {
     float: right;
 }
